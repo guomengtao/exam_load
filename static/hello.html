@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hello API Demo</title>
+</head>
+<body>
+  <h1>API 测试页面</h1>
+  <p id="response">等待加载...</p>
+
+  <script>
+    fetch('http://47.120.38.206:8081/api/hello')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('response').textContent = data.message;
+      })
+      .catch(error => {
+        document.getElementById('response').textContent = '出错了: ' + error;
+        console.error('请求失败:', error);
+      });
+  </script>
+</body>
+</html>

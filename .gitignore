@@ -1,0 +1,25 @@
+# Go 编译输出文件
+hello
+main
+your_app
+
+# Go 临时输出
+*.exe
+*.out
+*.o
+*.a
+
+# IDE 相关
+.vscode/
+.idea/
+
+# Go Modules
+/vendor/
+
+# 日志和临时文件
+*.log
+*.tmp
+*.swp
+
+# 本地配置
+.env
