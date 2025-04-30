@@ -30,6 +30,10 @@ func main() {
 	// ✅ 挂载所有路由（包括 /api/mysql 和 /api/redis）
 	routes.SetupRoutes(router)
 
+	// ✅ 添加静态文件服务
+	router.Static("/static", "./static")
+	router.StaticFile("/", "./static/index.html")
+
 	// ✅ 启动服务器
 	router.Run(":8081")
 }

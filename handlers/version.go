@@ -9,6 +9,6 @@ import (
 func GetVersion(c *gin.Context) {
 	// 你可以根据需求设置返回的格式，这里是 JSON 格式
 	c.JSON(http.StatusOK, gin.H{
-		"version": "1.0.0",
+		"version": "1.0.1",
 	})
 }

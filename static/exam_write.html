@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>创建试卷</title>
+  <script src="js/exam.js" type="module" defer></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans leading-relaxed tracking-wide flex flex-col min-h-screen">
+
+  <div class="max-w-7xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-10">
+    <h2 class="text-2xl font-bold text-center mb-6">创建试卷</h2>
+
+    <!-- 试卷标题 + 上传封面 -->
+    <div class="flex items-center gap-4 mb-6">
+      <span class="text-gray-700 whitespace-nowrap">试卷标题</span>
+      <input type="text" id="exam-title" class="flex-1 border px-3 py-2 rounded-md focus:ring-2 focus:ring-indigo-400" placeholder="请输入标题">
+      <span class="text-gray-700 whitespace-nowrap">上传封面</span>
+      <label for="exam-cover" class="cursor-pointer flex items-center justify-center text-2xl text-blue-500 hover:text-blue-700">
+        📤
+      </label>
+      <input type="file" id="exam-cover" class="hidden" accept="image/*">
+    </div>
+
+    <!-- 试卷描述 -->
+    <div class="mb-6">
+      <label class="block mb-1 text-gray-700">试卷描述</label>
+      <textarea id="exam-description" class="w-full border px-3 py-2 rounded-md focus:ring-2 focus:ring-indigo-400" placeholder="请输入描述" rows="3"></textarea>
+    </div>
+
+    <!-- 题目列表 -->
+    <div id="question-list"></div>
+
+    <!-- 总分 -->
+    <div class="text-right mt-6">
+      <span class="text-lg font-semibold">总分：</span>
+      <span id="total-score" class="text-xl text-indigo-600 font-bold">0</span>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="flex justify-center space-x-4 mt-6">
+      <button id="add-question-btn" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">添加新题目</button>
+      <button id="save-quiz-btn" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">保存试卷</button>
+      <button id="preview-submit-btn" class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">查看提交数据</button>
+    </div>
+  </div>
+
+  <!-- 永久记录任务清单 -->
+  <div style="display:none">
+    <!--
+    需要实现的功能清单：
+    1. 试卷标题、描述、封面上传功能。
+    2. 添加题目（单选题、多选题），默认显示一个单选题。
+    3. 每个题目包括：题目类型选择、题目标题、分值、选项列表。
+    4. 选项包括：选项输入框、上传图片按钮、正确答案选择（根据题型是单选框或多选框）。
+    5. 选项前显示字母 A、B、C、D。
+    6. 题目支持删除功能。
+    7. 每题分值修改时，总分实时更新。
+    8. 支持生成提交数据（包括位掩码编码正确答案），预览提交的JSON数据。
+    9. 上传选项图片后，在选项旁显示缩略图。
+    10. 试卷整体布局美观，关键输入区域占用最大宽度，辅助控件尽量小。
+    11. 题目支持拖动排序。
+    12. 上传选项图片后，显示缩略图预览。
+    13. 整体页面布局加宽松，适当放宽内容区域宽度。
+    14. 提交数据时包含选项内容，方便后台横向统计。
+    15. 切换单选/多选题时，选项按钮和正确答案设置同步切换单选框或多选框。
+    16. 每道题目前显示题目编号（如题目1、题目2）。
+    备注：题目拖动排序属于后期高级功能，当前版本为保持稳定，暂不启用。
+    -->
+  </div>
+
+</body>
+</html>

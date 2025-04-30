@@ -41,6 +41,12 @@ func SetupRoutes(router *gin.Engine) {
 	router.POST("/api/exam_paper", handlers.CreateExamPaper)
 
 	router.GET("/api/exam_paper/redis", handlers.ListExamPapersFromRedis)
+
+	// 注册提交答案接口
+	router.POST("/api/submit_answer", handlers.SubmitAnswer)
+
+	  // ✅ 测试所有源地址
+	  router.GET("/api/source/check_all", handlers.CheckAllSources)
 		 
 
 }

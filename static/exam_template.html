@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>创建试卷</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans leading-relaxed tracking-wide flex flex-col min-h-screen">
+
+  <div class="max-w-7xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-10">
+    <h2 class="text-2xl font-bold text-center mb-6">创建试卷</h2>
+
+    <!-- 试卷标题 + 上传封面 -->
+    <div class="flex items-center gap-4 mb-6">
+      <span class="text-gray-700 whitespace-nowrap">试卷标题</span>
+      <input type="text" id="exam-title" class="flex-1 border px-3 py-2 rounded-md focus:ring-2 focus:ring-indigo-400" placeholder="请输入标题">
+      <span class="text-gray-700 whitespace-nowrap">上传封面</span>
+      <label for="exam-cover" class="cursor-pointer flex items-center justify-center text-2xl text-blue-500 hover:text-blue-700">
+        📤
+      </label>
+      <input type="file" id="exam-cover" class="hidden" accept="image/*">
+    </div>
+
+    <!-- 试卷描述 -->
+    <div class="mb-6">
+      <label class="block mb-1 text-gray-700">试卷描述</label>
+      <textarea id="exam-description" class="w-full border px-3 py-2 rounded-md focus:ring-2 focus:ring-indigo-400" placeholder="请输入描述" rows="3"></textarea>
+    </div>
+
+    <!-- 题目列表 -->
+    <div id="question-list"></div>
+
+    <!-- 总分 -->
+    <div class="text-right mt-6">
+      <span class="text-lg font-semibold">总分：</span>
+      <span id="total-score" class="text-xl text-indigo-600 font-bold">0</span>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="flex justify-center space-x-4 mt-6">
+      <button id="add-question-btn" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">添加新题目</button>
+      <button id="save-quiz-btn" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">保存试卷</button>
+      <button id="preview-submit-btn" class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">查看提交数据</button>
+    </div>
+  </div>
+
+  <script>
+    const optionLetters = ['A', 'B', 'C', 'D'];
+
+    function updateTotalScore() {
+      let total = 0;
+      document.querySelectorAll('.question-score').forEach(input => {
+        total += parseInt(input.value) || 0;
+      });
+      document.getElementById('total-score').textContent = total;
+    }
+
+    function createQuestion() {
+      const container = document.createElement('div');
+      container.className = 'p-4 mt-6 bg-gray-50 rounded-lg shadow-md space-y-4 question-item';
+      console.log('Creating question...');
+
+      // 题型、题目标题、分数在一行
+      const headerRow = document.createElement('div');
+      headerRow.className = 'flex items-center gap-4';
+
+      // 题目编号
+      const numberLabel = document.createElement('span');
+      numberLabel.className = 'text-gray-700 font-bold question-number';
+      numberLabel.textContent = '题目 ';
+      headerRow.appendChild(numberLabel);
+
+      // 题型选择
+      const typeSelect = document.createElement('select');
+      typeSelect.className = 'w-24 border px-2 py-2 rounded-md focus:ring-2 focus:ring-indigo-400 question-type';
+      const optionSingle = document.createElement('option');
+      optionSingle.value = 'single';
+      optionSingle.textContent = '单选题';
+      const optionMultiple = document.createElement('option');
+      optionMultiple.value = 'multiple';
+      optionMultiple.textContent = '多选题';
+      typeSelect.appendChild(optionSingle);
+      typeSelect.appendChild(optionMultiple);
+      headerRow.appendChild(typeSelect);
+
+      // 题目标题输入框
+      const titleInput = document.createElement('input');
+      titleInput.type = 'text';
+      titleInput.className = 'flex-1 border px-3 py-2 rounded-md focus:ring-2 focus:ring-indigo-400 question-title';
+      titleInput.placeholder = '请输入题目内容';
+      headerRow.appendChild(titleInput);
+
+      // 分值输入框
+      const scoreInput = document.createElement('input');
+      scoreInput.type = 'number';
+      scoreInput.className = 'w-24 question-score border px-2 py-2 rounded-md focus:ring-2 focus:ring-indigo-400';
+      scoreInput.placeholder = '分值';
+      headerRow.appendChild(scoreInput);
+
+      container.appendChild(headerRow);
+
+      // 选项区域
+      const optionsArea = document.createElement('div');
+      optionsArea.className = 'space-y-3 option-list';
+
+      const uniqueName = 'correct-answer-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
+
+      for (let i = 0; i < 4; i++) {
+        const optionRow = document.createElement('div');
+        optionRow.className = 'flex items-center gap-2 option-item';
+        optionRow.setAttribute('data-index', i);
+
+        // 创建正确答案单选框
+        const correctAnswerInput = document.createElement('input');
+        correctAnswerInput.type = 'radio';
+        correctAnswerInput.name = uniqueName;
+        correctAnswerInput.className = 'correct-answer';
+        optionRow.appendChild(correctAnswerInput);
+
+        // 选项字母
+        const letterSpan = document.createElement('span');
+        letterSpan.className = 'w-6 text-gray-600 font-bold';
+        letterSpan.textContent = optionLetters[i];
+        optionRow.appendChild(letterSpan);
+
+        // 选项文本输入框
+        const optionTextInput = document.createElement('input');
+        optionTextInput.type = 'text';
+        optionTextInput.className = 'flex-1 border px-3 py-2 rounded-md focus:ring-2 focus:ring-indigo-400 option-text';
+        optionTextInput.placeholder = '请输入选项内容';
+        optionRow.appendChild(optionTextInput);
+
+        // 上传图片按钮和文件输入框
+        const label = document.createElement('label');
+        label.className = 'cursor-pointer text-xl text-blue-500 hover:text-blue-700 relative';
+        label.textContent = '📤';
+
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.className = 'hidden option-image-upload';
+        label.appendChild(fileInput);
+        optionRow.appendChild(label);
+
+        // 图片预览
+        const previewImg = document.createElement('img');
+        previewImg.src = '';
+        previewImg.alt = '预览';
+        previewImg.className = 'option-image-preview hidden w-10 h-10 object-cover rounded ml-2 border';
+        optionRow.appendChild(previewImg);
+
+        // 多选题正确答案复选框
+        const selectCorrectInput = document.createElement('input');
+        selectCorrectInput.type = 'checkbox';
+        selectCorrectInput.className = 'form-check-input ml-2 select-correct';
+        optionRow.appendChild(selectCorrectInput);
+
+        const correctLabel = document.createElement('span');
+        correctLabel.className = 'ml-1 text-gray-600 text-sm';
+        correctLabel.textContent = '正确答案';
+        optionRow.appendChild(correctLabel);
+
+        // 添加图片上传预览功能
+        fileInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+              previewImg.src = evt.target.result;
+              previewImg.classList.remove('hidden');
+            }
+            reader.readAsDataURL(file);
+          } else {
+            previewImg.src = '';
+            previewImg.classList.add('hidden');
+          }
+        });
+
+        optionsArea.appendChild(optionRow);
+      }
+
+      container.appendChild(optionsArea);
+
+      // 添加删除题目按钮
+      const deleteButton = document.createElement('button');
+      deleteButton.textContent = '❌ 删除题目';
+      deleteButton.className = 'text-red-500 mt-2 hover:underline';
+      deleteButton.onclick = () => {
+        container.remove();
+        updateQuestionNumbers();
+        updateTotalScore();
+      };
+      container.appendChild(deleteButton);
+
+      document.getElementById('question-list').appendChild(container);
+
+      // 总分动态更新
+      container.querySelectorAll('.question-score').forEach(input => {
+        input.addEventListener('input', updateTotalScore);
+      });
+
+      // 切换题型时同步更新选项按钮和正确答案按钮类型
+      container.querySelector('.question-type').addEventListener('change', (e) => {
+        const type = e.target.value;
+        const options = container.querySelectorAll('.option-item');
+        options.forEach((optionRow, idx) => {
+          const correctAnswerInput = optionRow.querySelector('.correct-answer');
+          const selectCorrectInput = optionRow.querySelector('.select-correct');
+
+          if (type === 'single') {
+            // 正确答案单选框
+            correctAnswerInput.type = 'radio';
+            correctAnswerInput.name = container.querySelector('.question-type').value + '-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
+            correctAnswerInput.checked = selectCorrectInput.checked;
+            selectCorrectInput.checked = false;
+            selectCorrectInput.type = 'hidden';
+            selectCorrectInput.style.display = 'none';
+          } else {
+            // 正确答案多选框
+            selectCorrectInput.type = 'checkbox';
+            selectCorrectInput.style.display = '';
+            selectCorrectInput.checked = correctAnswerInput.checked;
+            correctAnswerInput.checked = false;
+            correctAnswerInput.type = 'hidden';
+            correctAnswerInput.style.display = 'none';
+          }
+        });
+      });
+
+      // 初始化切换题型时的正确答案按钮状态
+      container.querySelector('.question-type').dispatchEvent(new Event('change'));
+
+      // 更新题号
+      updateQuestionNumbers();
+    }
+
+    // 更新题目编号
+    function updateQuestionNumbers() {
+      const questionItems = document.querySelectorAll('#question-list > div.question-item');
+      questionItems.forEach((item, index) => {
+        const numberLabel = item.querySelector('.question-number');
+        if (numberLabel) {
+          numberLabel.textContent = `题目 ${index + 1}`;
+        }
+      });
+    }
+
+    // 添加题目按钮
+    document.getElementById('add-question-btn').addEventListener('click', createQuestion);
+
+    // 保存试卷
+    document.getElementById('save-quiz-btn').addEventListener('click', () => {
+      alert('试卷保存成功，总分：' + document.getElementById('total-score').textContent);
+    });
+
+    // 查看提交数据按钮
+    document.getElementById('preview-submit-btn').addEventListener('click', () => {
+      const paper = {
+        title: document.getElementById('exam-title').value,
+        description: document.getElementById('exam-description').value,
+        cover_image: '', // 可以根据上传再赋值
+        total_score: parseInt(document.getElementById('total-score').textContent),
+        questions: []
+      };
+
+      document.querySelectorAll('#question-list > div.question-item').forEach(questionDiv => {
+        const type = questionDiv.querySelector('.question-type').value;
+        const title = questionDiv.querySelector('.question-title') ? questionDiv.querySelector('.question-title').value : '';
+        const score = parseInt(questionDiv.querySelector('.question-score').value) || 0;
+
+        // 位掩码处理选中的正确答案
+        let selected = 0;
+        const options = questionDiv.querySelectorAll('.option-item');
+        const optionsContent = [];
+        options.forEach((opt, idx) => {
+          const correctCheckbox = opt.querySelector('.select-correct');
+          const correctRadio = opt.querySelector('.correct-answer');
+          const isChecked = (type === 'single') ? (correctRadio && correctRadio.checked) : (correctCheckbox && correctCheckbox.checked);
+          if (isChecked) {
+            selected |= (1 << idx);
+          }
+          const optionText = opt.querySelector('.option-text') ? opt.querySelector('.option-text').value : '';
+          optionsContent.push(optionText);
+        });
+
+        paper.questions.push({
+          type,
+          title,
+          score,
+          selected_answer: selected,
+          options: optionsContent
+        });
+      });
+
+      console.log('提交数据：', paper);
+      alert(JSON.stringify(paper, null, 2));
+    });
+
+    // 页面加载默认添加一个题目
+    createQuestion();
+  </script>
+
+</body>
+</html>
