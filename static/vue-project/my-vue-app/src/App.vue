@@ -1,26 +1,24 @@
+
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app">
+   <h1>我的 Vue 应用</h1>
+    <nav>
+      <router-link to="/">首页</router-link> |
+      <router-link to="/about">关于我们</router-link>
+    </nav>
+    <router-view />
+    <MessageBox title="留言区 A" borderColor="#42b983" />
+    <MessageBox title="留言区 B" borderColor="#e74c3c" />
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import MessageBox from './components/MessageBox.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    MessageBox
   }
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
