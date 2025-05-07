@@ -170,6 +170,7 @@ func GetExamTemplate(c *gin.Context) {
 		listQuery := `
 			SELECT id, title, description, cover_image, total_score, questions, category_id, publish_time, status, creator, created_at, updated_at
 			FROM ` + tablePrefix + `exam_template
+			ORDER BY id DESC
 			LIMIT ? OFFSET ?
 		`
 		rows, err := db.Query(listQuery, limit, offset)

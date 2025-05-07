@@ -19,7 +19,7 @@ func main() {
 
 	// ✅ 加上 CORS 中间件
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://47.120.38.206:8086"}, // 允许前端访问
+		AllowAllOrigins: true, // 仅限测试，不推荐生产用
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
