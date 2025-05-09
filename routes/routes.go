@@ -2,51 +2,60 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"gin-go-test/handlers" // ✅ 确保 module 名正确
+	"gin-go-test/handlers"
+	"gin-go-test/auth" // 新增认证模块
 )
 
 func SetupRoutes(router *gin.Engine) {
+	// 公共路由（无需认证）
+	public := router.Group("/api")
+	{
+		// 系统状态接口
+		public.GET("/hellobay", handlers.HelloWorld)
+		public.GET("/mysql", handlers.MySQLStatus)
+		public.GET("/redis", handlers.RedisStatus)
+		public.GET("/version", handlers.GetVersion)
+		public.GET("/dbinfo", handlers.GetDBTablesInfo)
+		public.GET("/source/check_all", handlers.CheckAllSources)
 
+		// 认证相关
+		public.POST("/login", auth.LoginHandler)
+	}
 
-	router.GET("/api/hellobay", handlers.HelloWorld)
+	// 需要认证的API组
+	authGroup := router.Group("/api")
+	authGroup.Use(auth.AuthMiddleware()) // 应用JWT认证中间件
+	{
+		// 考试模板管理（需要 exam:manage 权限）
+		examTemplate := authGroup.Group("/exam_template")
+		examTemplate.Use(auth.PermissionMiddleware("exam:manage"))
+		{
+			examTemplate.GET("", handlers.GetExamTemplate)
+			examTemplate.POST("", handlers.CreateExam)
+			examTemplate.PUT("", handlers.UpdateExamTemplate)
+		}
 
-	// ✅ 添加数据库状态接口
-	router.GET("/api/mysql", handlers.MySQLStatus)
+		// 试卷管理
+		examPaper := authGroup.Group("/exam_papers")
+		{
+			examPaper.GET("", handlers.GetExam)
+			examPaper.POST("", handlers.CreateExamPaper)
+			examPaper.GET("/redis", handlers.ListExamPapersFromRedis)
+		}
 
-	// ✅ 添加 Redis 状态接口
-	router.GET("/api/redis", handlers.RedisStatus)
+		// 答案提交与查询
+		answer := authGroup.Group("/answers")
+		{
+			answer.POST("", handlers.SubmitAnswer)
+			answer.GET("/:record_id", handlers.GetAnswerResult)
+			answer.GET("/:record_id/full", handlers.GetFullAnswerResult)
+			answer.POST("/:id/submit", handlers.SubmitAnswers) // 保持原POST路径兼容
+		}
 
-	// 注册 API 路由
-	router.GET("/api/version", handlers.GetVersion)  
-	// 路由 /api/exam/:id 将根据请求方法分别调用不同的处理函数
-    router.GET("/api/exam", handlers.GetExam)   // GET 方法：获取试卷
-    router.POST("/api/exam/:id", handlers.SubmitAnswers) // POST 方法：提交学生回答
+		// 文件上传
+		authGroup.POST("/upload", handlers.UploadExamImage)
+	}
 
-	router.GET("/api/dbinfo", handlers.GetDBTablesInfo)
-
-
- 
-		 
-		
-			// 路由配置
-	router.POST("/api/exam_template", handlers.CreateExam)
-	
-	router.GET("/api/exam_template", handlers.GetExamTemplate)
-
-	router.PUT("/api/exam_template", handlers.UpdateExamTemplate)
-
-
-	router.POST("/api/exam_paper", handlers.CreateExamPaper)
-
-	router.POST("/api/upload", handlers.UploadExamImage)
-
-	router.GET("/api/exam_paper/redis", handlers.ListExamPapersFromRedis)
-
-	// 注册提交答案接口
-	router.POST("/api/submit_answer", handlers.SubmitAnswer)
-
-	  // ✅ 测试所有源地址
-	  router.GET("/api/source/check_all", handlers.CheckAllSources)
-		 
-
+	// 兼容旧路由（逐步迁移时可保留）
+	router.GET("/api/exam", handlers.GetExam) // 兼容旧GET请求
 }

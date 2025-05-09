@@ -1,39 +1,53 @@
 package main
 
 import (
+	"io"
+	"os"
 	"time"
-
+	
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
-
 	"gin-go-test/routes"
-	"gin-go-test/utils" // 引入 utils 初始化 DB 和 Redis
+	"gin-go-test/utils"
+	// "gin-go-test/auth"
 )
 
 func main() {
-	// ✅ 初始化数据库和 Redis
+	// 启用控制台彩色日志
+	gin.ForceConsoleColor()
+	
+	// 创建日志文件
+	f, err := os.Create("gin.log")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	
+	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
+
+	// 初始化数据库和Redis
 	utils.InitDB()
 	utils.InitRedis()
+	// auth.InitDB(utils.DB) // 初始化认证模块
 
 	router := gin.Default()
-
-	// ✅ 加上 CORS 中间件
+	
+	// CORS配置
 	router.Use(cors.New(cors.Config{
-		AllowAllOrigins: true, // 仅限测试，不推荐生产用
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
+		AllowAllOrigins: true,
+		AllowMethods:    []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:    []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:   []string{"Content-Length"},
+		MaxAge:          12 * time.Hour,
 	}))
 
-	// ✅ 挂载所有路由（包括 /api/mysql 和 /api/redis）
+	// 设置路由
 	routes.SetupRoutes(router)
 
-	// ✅ 添加静态文件服务
+	// 静态文件服务
 	router.Static("/static", "./static")
 	router.StaticFile("/", "./static/index.html")
 
-	// ✅ 启动服务器
+	// 启动服务器
 	router.Run(":8081")
 }

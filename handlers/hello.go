@@ -2,11 +2,14 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
+// @Summary 测试接口
+// @Description 返回Hello World测试信息
+// @Tags 测试
+// @Produce json
+// @Success 200 {string} string "Hello World"
+// @Router /api/hellobay [get]
 func HelloWorld(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Hello, world!",
-	})
+    c.String(200, "Hello World")
 }

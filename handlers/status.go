@@ -5,7 +5,12 @@ import (
 	"net/http"
 	"gin-go-test/utils"
 )
-
+// @Summary 获取MySQL状态
+// @Description 检查MySQL数据库连接状态
+// @Tags 数据库
+// @Produce json
+// @Success 200 {object} map[string]interface{} "数据库状态"
+// @Router /api/mysql [get]
 func MySQLStatus(c *gin.Context) {
 	status := utils.CheckMySQLStatus()
 	if status {
