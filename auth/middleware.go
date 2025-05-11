@@ -4,15 +4,21 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
+
+// var jwtSecret = "your-secret-key" // 确保你在真实项目中用安全方式设置
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := strings.TrimPrefix(c.GetHeader("Authorization"), "Bearer ")
 		if tokenString == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "未提供访问令牌"})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"code":    http.StatusUnauthorized,
+				"message": "未提供访问令牌",
+			})
 			return
 		}
 
@@ -23,7 +29,10 @@ func AuthMiddleware() gin.HandlerFunc {
 			return []byte(jwtSecret), nil
 		})
 		if err != nil || !token.Valid {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "无效的访问令牌"})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"code":    http.StatusUnauthorized,
+				"message": "无效的访问令牌",
+			})
 			return
 		}
 
@@ -39,13 +48,18 @@ func PermissionMiddleware(requiredPermission string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		role, exists := c.Get("role")
 		if !exists {
-			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "权限不足"})
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+				"code":    http.StatusForbidden,
+				"message": "权限不足，未找到角色信息",
+			})
 			return
 		}
 
-		// 简单权限检查（可根据需要扩展）
 		if requiredPermission == "exam:manage" && role != "admin" {
-			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "需要管理员权限"})
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+				"code":    http.StatusForbidden,
+				"message": "需要管理员权限",
+			})
 			return
 		}
 		c.Next()

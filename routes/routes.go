@@ -36,7 +36,7 @@ func SetupRoutes(router *gin.Engine) {
 		}
 
 		// 试卷管理
-		examPaper := authGroup.Group("/exam_papers")
+		examPaper := authGroup.Group("/exam_paper")
 		{
 			examPaper.GET("", handlers.GetExam)
 			examPaper.POST("", handlers.CreateExamPaper)
