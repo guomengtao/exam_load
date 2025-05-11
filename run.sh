@@ -1,1 +1,1 @@
-pkill hello && go build -o hello main.go && ./hello
+pkill hello && go build -o hello main.go && ./hello &

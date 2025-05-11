@@ -104,6 +104,8 @@ func CreateExamPaper(c *gin.Context) {
 		"status":        template.Status,
 		"creator":       template.Creator,
 		"template_id":   req.TemplateID,
+		"username":   "", // placeholder, to be filled later
+		"user_id":    "", // placeholder, to be filled later
 	}
 
 	jsonData, err := json.Marshal(examPaperData)

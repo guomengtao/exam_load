@@ -20,6 +20,9 @@ func SetupRoutes(router *gin.Engine) {
 
 		// 认证相关
 		public.POST("/login", auth.LoginHandler)
+		public.POST("/user/answer", handlers.SubmitAnswer)
+
+		public.GET("user/answer/:record_id", handlers.GetAnswerResult)
 	}
 
 	// 需要认证的API组
@@ -44,7 +47,7 @@ func SetupRoutes(router *gin.Engine) {
 		}
 
 		// 答案提交与查询
-		answer := authGroup.Group("/answers")
+		answer := authGroup.Group("/answer")
 		{
 			answer.POST("", handlers.SubmitAnswer)
 			answer.GET("/:record_id", handlers.GetAnswerResult)
