@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-	"reflect" // 添加这行
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gin-go-test/utils"
@@ -16,35 +15,46 @@ import (
 
 // 数据结构定义
 type AnswerRequest struct {
-	UUID    string                     `json:"uuid" binding:"required"`
-	ExamID  int64                      `json:"exam_id" binding:"required"`
-	Answers map[string]json.RawMessage `json:"answers" binding:"required"`
+	UUID       string                     `json:"uuid" binding:"required"`
+	ExamID     int64                      `json:"exam_id" binding:"required"`
+	ExamUUID   string                     `json:"exam_uuid"`
+	Answers    map[string]json.RawMessage `json:"answers" binding:"required"`
+	Username   string                     `json:"username"`
+	UserID     string                     `json:"user_id"`
+	Duration   int                        `json:"duration"`
+	FullScore  int                        `json:"full_score"`
 }
 
 type AnswerResponse struct {
     UUID       string           `json:"uuid"`
     ExamID     int64            `json:"exam_id"` // 保持为int64
+    ExamUUID   string           `json:"exam_uuid"`
     UserUUID   string           `json:"user_uuid"`
     Answers    json.RawMessage  `json:"answers"`
     TotalScore int              `json:"total_score"`
     CreatedAt  int64            `json:"created_at"`
+    Username   string           `json:"username"`
+    UserID     string           `json:"user_id"`
+    Duration   int              `json:"duration"`
+    Score      int              `json:"score"`  // 修改字段名为 score
 }
 
 // 新增数据结构
 type ExamPaper struct {
-    ID       string     `json:"id"`
+    ID       int        `json:"id"`
     Title    string     `json:"title"`
     Questions []Question `json:"questions"`
 }
 
 type Question struct {
-    ID           int         `json:"id"`
-    Title        string      `json:"title"`
-    Options      []string    `json:"options"`
-    Type         string      `json:"type"` // single/multi/judge
-    Score        int         `json:"score"`
-    CorrectAnswer interface{} `json:"correct_answer"`
-    Analysis     string      `json:"analysis"`
+    ID                   int         `json:"id"`
+    Title                string      `json:"title"`
+    Options              []string    `json:"options"`
+    Type                 string      `json:"type"` // single/multi/judge
+    Score                int         `json:"score"`
+    CorrectAnswerBitmask int         `json:"correct_answer_bitmask"` // bitmask 字段
+    CorrectAnswer        interface{} `json:"correct_answer"`         // 存储解析后的正确答案
+    Analysis             string      `json:"analysis"`
 }
 
 type FullAnswerResponse struct {
@@ -54,6 +64,10 @@ type FullAnswerResponse struct {
     TotalScore  int                  `json:"total_score"`
     CreatedAt   int64                `json:"created_at"`
     Questions   []QuestionWithAnswer `json:"questions"`
+    Username    string               `json:"username"`
+    UserID      string               `json:"user_id"`
+    Duration    int                  `json:"duration"`
+    Score       int                  `json:"score"`
 }
 
 type QuestionWithAnswer struct {
@@ -95,10 +109,15 @@ func SubmitAnswer(c *gin.Context) {
 	record := map[string]interface{}{
 		"answer_uid":  recordID,
 		"exam_id":    req.ExamID,
+		"exam_uuid":  req.ExamUUID,
 		"user_uuid":  req.UUID,
 		"answers":    req.Answers,
 		"total_score": totalScore,
 		"created_at": createdAt,
+		"username": req.Username,
+		"user_id": req.UserID,
+		"duration": req.Duration,
+		"score": totalScore, // 修改为使用 score 字段
 	}
 
 	if err := saveToRedis(record); err != nil {
@@ -144,13 +163,23 @@ func GetAnswerResult(c *gin.Context) {
 	totalScore, _ := strconv.Atoi(result["total_score"])
 	createdAt, _ := strconv.ParseInt(result["created_at"], 10, 64)
 
+	username := result["username"]
+	userID := result["user_id"]
+	duration, _ := strconv.Atoi(result["duration"])
+	score, _ := strconv.Atoi(result["score"])
+
 	response := AnswerResponse{
 		UUID:       recordID,
 		ExamID:     examID,
+		ExamUUID:   result["exam_uuid"],
 		UserUUID:   result["user_uuid"],
 		Answers:    []byte(result["answers"]),
 		TotalScore: totalScore,
 		CreatedAt:  createdAt,
+		Username:   username,
+		UserID:     userID,
+		Duration:   duration,
+		Score:      score,
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -203,19 +232,25 @@ func asyncSaveToDatabase(data map[string]interface{}, ctx context.Context) {
 	}
 
 	query := `INSERT INTO ym_exam_answers (
-		uuid, exam_id, user_uuid, 
-		answers, total_score, created_at
-	) VALUES (?, ?, ?, ?, ?, ?)`
+		uuid, exam_id, exam_uuid, user_uuid, 
+		answers, total_score, created_at, 
+		username, user_id, duration, score
+	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	
 	_, err = utils.DB.ExecContext(
 		ctx,
 		query,
 		data["answer_uid"],
 		data["exam_id"],
+		data["exam_uuid"],
 		data["user_uuid"],
 		answersJSON,
 		data["total_score"],
 		time.Unix(data["created_at"].(int64), 0),
+		data["username"],
+		data["user_id"],
+		data["duration"],
+		data["score"],
 	)
 	
 	if err != nil {
@@ -234,72 +269,65 @@ func sendErrorResponse(c *gin.Context, code int, message string, err error) {
 	c.JSON(code, response)
 }
 
-// GetFullAnswerResult 获取完整答题结果（包含题目信息）
+// 解析 bitmask
+func decodeCorrectAnswer(bitmask int) []int {
+	correctAnswers := []int{}
+	for i := 0; i < 32; i++ {
+		if (bitmask & (1 << i)) != 0 {
+			correctAnswers = append(correctAnswers, i)
+		}
+	}
+	return correctAnswers
+}
+
+// GetFullAnswerResult 获取完整答题结果（包含题目信息和正确答案）
 func GetFullAnswerResult(c *gin.Context) {
-    recordID := c.Param("record_id")
-    if recordID == "" {
-        sendErrorResponse(c, http.StatusBadRequest, "记录ID不能为空", nil)
-        return
-    }
+	recordID := c.Param("record_id")
+	if recordID == "" {
+		sendErrorResponse(c, http.StatusBadRequest, "记录ID不能为空", nil)
+		return
+	}
 
-    // 1. 获取答题记录
-    record, err := getAnswerRecord(recordID)
-    if err != nil {
-        sendErrorResponse(c, http.StatusInternalServerError, "获取答题记录失败", err)
-        return
-    }
+	// 获取答题记录
+	record, err := getAnswerRecord(recordID)
+	if err != nil {
+		sendErrorResponse(c, http.StatusInternalServerError, "获取答题记录失败", err)
+		return
+	}
 
-    // 2. 获取试卷信息
-    paper, err := getExamPaper(record.ExamID)
-    if err != nil {
-        sendErrorResponse(c, http.StatusInternalServerError, "获取试卷信息失败", err)
-        return
-    }
+	// 获取试卷信息
+	paper, err := getExamPaper(record.ExamUUID)
+	if err != nil {
+		sendErrorResponse(c, http.StatusInternalServerError, "获取试卷信息失败", err)
+		return
+	}
+	if paper == nil {
+		sendErrorResponse(c, http.StatusNotFound, "试卷信息缺失，请联系管理员", nil)
+		return
+	}
 
-    // 3. 构建响应
-    response := buildFullResponse(record, paper)
-    if response == nil {
-        sendErrorResponse(c, http.StatusInternalServerError, "构建响应失败", nil)
-        return
-    }
+	// 解析每个题目的正确答案
+	for i, q := range paper.Questions {
+		// 使用解码函数解析bitmask
+		paper.Questions[i].CorrectAnswer = decodeCorrectAnswer(q.CorrectAnswerBitmask)
+	}
 
-    c.JSON(http.StatusOK, gin.H{
-        "code":    200,
-        "message": "获取成功",
-        "data":    response,
-    })
+	// 构建响应
+	response := buildFullResponse(record, paper)
+	if response == nil {
+		sendErrorResponse(c, http.StatusInternalServerError, "构建响应失败", nil)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"message": "获取成功",
+		"data":    response,
+	})
 }
 
-// 辅助函数：获取试卷详情
-// 修改为接受 interface{} 类型，自动处理字符串和数字
-func getExamPaper(examID interface{}) (*ExamPaper, error) {
-    var examIDStr string
-    
-    // 类型转换处理
-    switch v := examID.(type) {
-    case string:
-        examIDStr = v
-    case int, int32, int64:
-        examIDStr = strconv.FormatInt(reflect.ValueOf(v).Int(), 10)
-    default:
-        return nil, fmt.Errorf("不支持的examID类型: %T", examID)
-    }
 
-    paperKey := fmt.Sprintf("exam_paper:%s", examIDStr)
-    paperData, err := utils.RedisClient.Get(utils.Ctx, paperKey).Result()
-    if err != nil {
-        return nil, fmt.Errorf("获取试卷缓存失败: %v", err)
-    }
-
-    var paper ExamPaper
-    if err := json.Unmarshal([]byte(paperData), &paper); err != nil {
-        return nil, fmt.Errorf("解析试卷数据失败: %v", err)
-    }
-
-    return &paper, nil
-}
-
-// 修改为只接收两个参数
+// 构建完整答题结果
 func buildFullResponse(record *AnswerResponse, paper *ExamPaper) *FullAnswerResponse {
     // 解析用户答案
     var userAnswers map[string]struct {
@@ -337,10 +365,14 @@ func buildFullResponse(record *AnswerResponse, paper *ExamPaper) *FullAnswerResp
         TotalScore:  record.TotalScore,
         CreatedAt:   record.CreatedAt,
         Questions:   questions,
+        Username:    record.Username,
+        UserID:      record.UserID,
+        Duration:    record.Duration,
+        Score:       record.Score,
     }
 }
 
-// 辅助函数：判断答案是否正确
+// 判断答案是否正确
 func isAnswerCorrect(q Question, userAnswer interface{}) bool {
     switch q.Type {
     case "multi":
@@ -349,26 +381,19 @@ func isAnswerCorrect(q Question, userAnswer interface{}) bool {
         if !ok1 || !ok2 {
             return false
         }
-        return compareSlices(userAns, correctAns)
+        return compareSlicesOrdered(userAns, correctAns)
     default:
         return userAnswer == q.CorrectAnswer
     }
 }
 
-// 比较切片（用于多选题）
-func compareSlices(a, b []interface{}) bool {
+// 比较多选题的答案
+func compareSlicesOrdered(a, b []interface{}) bool {
     if len(a) != len(b) {
         return false
     }
-    
-    // 转换为map比较
-    mapA := make(map[interface{}]struct{})
-    for _, v := range a {
-        mapA[v] = struct{}{}
-    }
-    
-    for _, v := range b {
-        if _, exists := mapA[v]; !exists {
+    for i := range a {
+        if a[i] != b[i] {
             return false
         }
     }
@@ -384,15 +409,64 @@ func getAnswerRecord(recordID string) (*AnswerResponse, error) {
     }
     
     examID, _ := strconv.ParseInt(result["exam_id"], 10, 64)
+    examUUID := result["exam_uuid"]
     totalScore, _ := strconv.Atoi(result["total_score"])
     createdAt, _ := strconv.ParseInt(result["created_at"], 10, 64)
+    username := result["username"]
+    userID := result["user_id"]
+    duration, _ := strconv.Atoi(result["duration"])
+    score, _ := strconv.Atoi(result["score"])
     
     return &AnswerResponse{
         UUID:       recordID,
         ExamID:     examID,
+        ExamUUID:   examUUID,
         UserUUID:   result["user_uuid"],
         Answers:    []byte(result["answers"]),
         TotalScore: totalScore,
         CreatedAt:  createdAt,
+        Username:   username,
+        UserID:     userID,
+        Duration:   duration,
+        Score:      score,
     }, nil
+}
+
+// getExamPaper fetches the exam paper details from Redis using the provided exam UUID
+func getExamPaper(examUUID string) (*ExamPaper, error) {
+    // Create the Redis key to fetch the exam paper
+    redisKey := fmt.Sprintf("exam_paper:%s", examUUID)
+
+    // Fetch the data from Redis
+    result, err := utils.RedisClient.Get(utils.Ctx, redisKey).Result()
+    if err != nil {
+        return nil, fmt.Errorf("获取试卷数据失败: %v", err)
+    }
+
+    // Parse the data into the ExamPaper struct
+    var paper ExamPaper
+    if err := json.Unmarshal([]byte(result), &paper); err != nil {
+        // If it's a stringified JSON array, we need to handle it differently
+        var rawPaper map[string]interface{}
+        if err := json.Unmarshal([]byte(result), &rawPaper); err != nil {
+            return nil, fmt.Errorf("解析试卷数据失败: %v", err)
+        }
+        // Assuming the 'questions' field is a stringified array in rawPaper, we can manually unmarshal it
+        if questionsJSON, ok := rawPaper["questions"].(string); ok {
+            var questions []Question
+            if err := json.Unmarshal([]byte(questionsJSON), &questions); err != nil {
+                return nil, fmt.Errorf("解析试题数据失败: %v", err)
+            }
+            paper.Questions = questions
+        }
+        // 其他字段赋值
+        if id, ok := rawPaper["id"].(float64); ok {
+            paper.ID = int(id)
+        }
+        if title, ok := rawPaper["title"].(string); ok {
+            paper.Title = title
+        }
+    }
+
+    return &paper, nil
 }

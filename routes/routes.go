@@ -20,9 +20,14 @@ func SetupRoutes(router *gin.Engine) {
 
 		// 认证相关
 		public.POST("/login", auth.LoginHandler)
+
+		// 写入作答记录
 		public.POST("/user/answer", handlers.SubmitAnswer)
 
 		public.GET("user/answer/:record_id", handlers.GetAnswerResult)
+
+		public.GET("user/answer/:record_id/full", handlers.GetFullAnswerResult)
+		
 	}
 
 	// 需要认证的API组
