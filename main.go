@@ -1,3 +1,8 @@
+// @title        Gin API 文档
+// @version      1.0
+// @description  这是一个基于 Gin 的接口文档示例
+// @host         localhost:8081
+// @BasePath     /
 package main
 
 import (
@@ -9,6 +14,9 @@ import (
 	"github.com/gin-contrib/cors"
 	"gin-go-test/routes"
 	"gin-go-test/utils"
+	"github.com/swaggo/files"
+    "github.com/swaggo/gin-swagger"
+	_ "gin-go-test/docs"  // 修改为你的 go.mod 模块名
 	// "gin-go-test/auth"
 )
 
@@ -41,6 +49,7 @@ func main() {
 		MaxAge:          12 * time.Hour,
 	}))
 
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// 设置路由
 	routes.SetupRoutes(router)
 

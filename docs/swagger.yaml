@@ -1,0 +1,460 @@
+basePath: /
+definitions:
+  handlers.AnswerMap:
+    additionalProperties: true
+    type: object
+  handlers.AnswerResponse:
+    properties:
+      answers:
+        description: for Swagger compatibility
+      created_at:
+        type: integer
+      duration:
+        type: integer
+      exam_id:
+        type: integer
+      exam_uuid:
+        type: string
+      score:
+        type: integer
+      total_score:
+        type: integer
+      user_id:
+        type: string
+      user_uuid:
+        type: string
+      username:
+        type: string
+      uuid:
+        type: string
+    type: object
+  handlers.ErrorResponse:
+    properties:
+      code:
+        type: integer
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  handlers.ExamPaper:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      questions:
+        items:
+          $ref: '#/definitions/handlers.Question'
+        type: array
+      title:
+        type: string
+    type: object
+  handlers.FullAnswerResponse:
+    properties:
+      created_at:
+        type: integer
+      description:
+        type: string
+      duration:
+        type: integer
+      exam_id:
+        description: 兼容数字/字符串
+      questions:
+        items:
+          $ref: '#/definitions/handlers.QuestionWithAnswer'
+        type: array
+      record_id:
+        type: string
+      score:
+        type: integer
+      title:
+        type: string
+      total_score:
+        type: integer
+      user_id:
+        type: string
+      user_uuid:
+        type: string
+      username:
+        type: string
+    type: object
+  handlers.Question:
+    properties:
+      analysis:
+        type: string
+      correct_answer:
+        description: 存储解析后的正确答案
+      correct_answer_bitmask:
+        description: bitmask 字段
+        type: integer
+      id:
+        type: integer
+      options:
+        items:
+          type: string
+        type: array
+      score:
+        type: integer
+      title:
+        type: string
+      type:
+        description: single/multi/judge
+        type: string
+    type: object
+  handlers.QuestionWithAnswer:
+    properties:
+      analysis:
+        type: string
+      correct_answer: {}
+      id:
+        type: integer
+      is_correct:
+        type: boolean
+      options:
+        items:
+          type: string
+        type: array
+      score:
+        type: integer
+      title:
+        type: string
+      type:
+        type: string
+      user_answer: {}
+    type: object
+  handlers.SuccessResponse:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+host: localhost:8081
+info:
+  contact: {}
+  description: 这是一个基于 Gin 的接口文档示例
+  title: Gin API 文档
+  version: "1.0"
+paths:
+  /api/exam/answer:
+    post:
+      consumes:
+      - application/json
+      description: 用户完成答题后提交记录，并保存到 Redis 和数据库
+      parameters:
+      - description: 用户UUID
+        in: body
+        name: uuid
+        required: true
+        schema:
+          type: string
+      - description: 试卷ID
+        in: body
+        name: exam_id
+        required: true
+        schema:
+          type: integer
+      - description: 试卷UUID
+        in: body
+        name: exam_uuid
+        schema:
+          type: string
+      - description: 用户答题数据
+        in: body
+        name: answers
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.AnswerMap'
+      - description: 用户名
+        in: body
+        name: username
+        schema:
+          type: string
+      - description: 用户学号
+        in: body
+        name: user_id
+        schema:
+          type: string
+      - description: 考试时长
+        in: body
+        name: duration
+        schema:
+          type: integer
+      - description: 试卷总分
+        in: body
+        name: full_score
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回答题记录
+          schema:
+            $ref: '#/definitions/handlers.AnswerResponse'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: 提交用户的答题记录
+      tags:
+      - exam_answer
+  /api/exam/answerrecord/{record_id}:
+    get:
+      consumes:
+      - application/json
+      description: 通过答题记录ID获取用户答题记录
+      parameters:
+      - description: 答题记录ID
+        in: path
+        name: record_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回用户答题记录
+          schema:
+            $ref: '#/definitions/handlers.AnswerResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: 获取用户的答题记录
+      tags:
+      - exam_answer
+  /api/exam/bitmask:
+    post:
+      description: 将 bitmask 转换为正确答案的数组
+      parameters:
+      - description: bitmask
+        in: body
+        name: bitmask
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: 返回正确答案数组
+          schema:
+            items:
+              type: integer
+            type: array
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      tags:
+      - exam_answer
+  /api/exam/fullresult:
+    post:
+      consumes:
+      - application/json
+      description: 通过用户的答题记录和试卷信息，构建完整的答题结果
+      parameters:
+      - description: 答题记录
+        in: body
+        name: record
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.AnswerResponse'
+      - description: 试卷信息
+        in: body
+        name: paper
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ExamPaper'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回完整的答题记录
+          schema:
+            $ref: '#/definitions/handlers.FullAnswerResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: 构建包含用户答案和正确答案的详细答题记录
+      tags:
+      - exam_answer
+  /api/exam/iscorrect:
+    post:
+      consumes:
+      - application/json
+      description: 判断用户答案和正确答案是否一致，兼容顺序不同的情况
+      parameters:
+      - description: 试题信息
+        in: body
+        name: question
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.Question'
+      - description: 用户的答案
+        in: body
+        name: userAnswer
+        required: true
+        schema: {}
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回是否正确
+          schema:
+            type: boolean
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: 判断用户的答案是否正确
+      tags:
+      - exam
+  /api/exam/paper/{exam_uuid}:
+    get:
+      consumes:
+      - application/json
+      description: 根据试卷UUID获取试卷信息
+      parameters:
+      - description: 试卷UUID
+        in: path
+        name: exam_uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回试卷信息
+          schema:
+            $ref: '#/definitions/handlers.ExamPaper'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: 获取试卷信息
+      tags:
+      - exam_answer
+  /api/hellobay:
+    get:
+      description: 返回Hello World测试信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Hello World
+          schema:
+            type: string
+      summary: 测试接口
+      tags:
+      - 测试
+  /api/mysql:
+    get:
+      description: 检查MySQL数据库连接状态
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 数据库状态
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取MySQL状态
+      tags:
+      - 数据库
+  /api/redis/save:
+    post:
+      consumes:
+      - application/json
+      description: 将用户的答题记录保存到 Redis，以便后续查询
+      parameters:
+      - description: 答题记录
+        in: body
+        name: data
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 保存成功
+          schema:
+            $ref: '#/definitions/handlers.SuccessResponse'
+        "500":
+          description: 保存失败
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: 将答题记录存储到 Redis
+      tags:
+      - exam_answer
+  /api/user/answer/{record_id}:
+    get:
+      consumes:
+      - application/json
+      description: 通过答题记录ID获取用户的答题结果
+      parameters:
+      - description: 答题记录ID
+        in: path
+        name: record_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回用户答题记录
+          schema:
+            $ref: '#/definitions/handlers.AnswerResponse'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: 未找到答题记录
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: 获取用户的答题记录
+      tags:
+      - exam_answer
+  /api/user/answer/{record_id}/full:
+    get:
+      consumes:
+      - application/json
+      description: 获取用户的完整答题结果，包括试卷标题、描述、问题、答案等详细信息
+      parameters:
+      - description: 答题记录ID
+        in: path
+        name: record_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回完整的答题记录
+          schema:
+            $ref: '#/definitions/handlers.FullAnswerResponse'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: 服务器错误
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: 获取完整的答题记录，包含试卷信息、用户答案、正确答案等
+      tags:
+      - exam_answer
+swagger: "2.0"

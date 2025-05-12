@@ -1,3 +1,4 @@
+
 package handlers
 
 import (
@@ -14,6 +15,23 @@ import (
 	"sort"
 )
 
+// AnswerMap 用于 Swagger 显示答题数据格式
+type AnswerMap map[string]interface{}
+
+// ErrorResponse 通用错误返回结构
+type ErrorResponse struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Error   string `json:"error,omitempty"`
+}
+
+// SuccessResponse 通用成功返回结构
+type SuccessResponse struct {
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
+}
+
 // 数据结构定义
 type AnswerRequest struct {
 	UUID       string                     `json:"uuid" binding:"required"`
@@ -27,17 +45,17 @@ type AnswerRequest struct {
 }
 
 type AnswerResponse struct {
-    UUID       string           `json:"uuid"`
-    ExamID     int64            `json:"exam_id"` // 保持为int64
-    ExamUUID   string           `json:"exam_uuid"`
-    UserUUID   string           `json:"user_uuid"`
-    Answers    json.RawMessage  `json:"answers"`
-    TotalScore int              `json:"total_score"`
-    CreatedAt  int64            `json:"created_at"`
-    Username   string           `json:"username"`
-    UserID     string           `json:"user_id"`
-    Duration   int              `json:"duration"`
-    Score      int              `json:"score"`  // 修改字段名为 score
+	UUID       string      `json:"uuid"`
+	ExamID     int64       `json:"exam_id"`
+	ExamUUID   string      `json:"exam_uuid"`
+	UserUUID   string      `json:"user_uuid"`
+	Answers    interface{} `json:"answers"` // for Swagger compatibility
+	TotalScore int         `json:"total_score"`
+	CreatedAt  int64       `json:"created_at"`
+	Username   string      `json:"username"`
+	UserID     string      `json:"user_id"`
+	Duration   int         `json:"duration"`
+	Score      int         `json:"score"`
 }
 
 // 新增数据结构
@@ -87,6 +105,23 @@ type QuestionWithAnswer struct {
 }
 
 // SubmitAnswer 提交答题记录
+// @Summary 提交用户的答题记录
+// @Description 用户完成答题后提交记录，并保存到 Redis 和数据库
+// @Tags exam_answer
+// @Accept json
+// @Produce json
+// @Param uuid body string true "用户UUID"
+// @Param exam_id body int64 true "试卷ID"
+// @Param exam_uuid body string false "试卷UUID"
+// @Param answers body AnswerMap true "用户答题数据"
+// @Param username body string false "用户名"
+// @Param user_id body string false "用户学号"
+// @Param duration body int false "考试时长"
+// @Param full_score body int false "试卷总分"
+// @Success 200 {object} AnswerResponse "返回答题记录"
+// @Failure 400 {object} ErrorResponse "请求参数错误"
+// @Failure 500 {object} ErrorResponse "服务器错误"
+// @Router /api/exam/answer [post]
 func SubmitAnswer(c *gin.Context) {
 	var req AnswerRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -141,7 +176,18 @@ func SubmitAnswer(c *gin.Context) {
 	})
 }
 
-// GetAnswerResult 获取答题结果
+// GetAnswerResult 获取答题记录
+// @Summary 获取用户的答题记录
+// @Description 通过答题记录ID获取用户的答题结果
+// @Tags exam_answer
+// @Accept json
+// @Produce json
+// @Param record_id path string true "答题记录ID"
+// @Success 200 {object} AnswerResponse "返回用户答题记录"
+// @Failure 400 {object} ErrorResponse "请求参数错误"
+// @Failure 404 {object} ErrorResponse "未找到答题记录"
+// @Failure 500 {object} ErrorResponse "服务器错误"
+// @Router /api/user/answer/{record_id} [get]
 func GetAnswerResult(c *gin.Context) {
 	recordID := c.Param("record_id")
 	if recordID == "" {
@@ -172,12 +218,18 @@ func GetAnswerResult(c *gin.Context) {
 	duration, _ := strconv.Atoi(result["duration"])
 	score, _ := strconv.Atoi(result["score"])
 
+	// 转换答案字段为字节切片
+	var answers []byte
+	if result["answers"] != "" {
+		answers = []byte(result["answers"])
+	}
+
 	response := AnswerResponse{
 		UUID:       recordID,
 		ExamID:     examID,
 		ExamUUID:   result["exam_uuid"],
 		UserUUID:   result["user_uuid"],
-		Answers:    []byte(result["answers"]),
+		Answers:    answers, // ensure answers is []byte here
 		TotalScore: totalScore,
 		CreatedAt:  createdAt,
 		Username:   username,
@@ -194,7 +246,16 @@ func GetAnswerResult(c *gin.Context) {
 }
 
 
-// 辅助函数
+// saveToRedis 将答题记录保存到 Redis
+// @Summary 将答题记录存储到 Redis
+// @Description 将用户的答题记录保存到 Redis，以便后续查询
+// @Tags exam_answer
+// @Accept json
+// @Produce json
+// @Param data body map[string]interface{} true "答题记录"
+// @Success 200 {object} SuccessResponse "保存成功"
+// @Failure 500 {object} ErrorResponse "保存失败"
+// @Router /api/redis/save [post]
 func saveToRedis(data map[string]interface{}) error {
 	redisData := make(map[string]string)
 	for k, v := range data {
@@ -221,6 +282,7 @@ func saveToRedis(data map[string]interface{}) error {
 	return utils.RedisClient.Expire(utils.Ctx, redisKey, 7 * 24*time.Hour).Err()
 }
 
+// @Tags exam_answer
 func asyncSaveToDatabase(data map[string]interface{}, ctx context.Context) {
 	select {
 	case <-ctx.Done():
@@ -273,7 +335,13 @@ func sendErrorResponse(c *gin.Context, code int, message string, err error) {
 	c.JSON(code, response)
 }
 
-// 解析 bitmask
+// decodeCorrectAnswer 解码 bitmask 为正确答案数组
+// @Tags exam_answer
+// @Description 将 bitmask 转换为正确答案的数组
+// @Param bitmask body int true "bitmask"
+// @Success 200 {array} int "返回正确答案数组"
+// @Failure 400 {object} ErrorResponse "请求参数错误"
+// @Router /api/exam/bitmask [post]
 func decodeCorrectAnswer(bitmask int) []int {
 	var answers []int
 	for i := 0; i < 32; i++ {
@@ -285,6 +353,16 @@ func decodeCorrectAnswer(bitmask int) []int {
 }
 
 // GetFullAnswerResult 获取完整答题结果（包含题目信息和正确答案）
+// @Summary 获取完整的答题记录，包含试卷信息、用户答案、正确答案等
+// @Description 获取用户的完整答题结果，包括试卷标题、描述、问题、答案等详细信息
+// @Tags exam_answer
+// @Accept json
+// @Produce json
+// @Param record_id path string true "答题记录ID"
+// @Success 200 {object} FullAnswerResponse "返回完整的答题记录"
+// @Failure 400 {object} ErrorResponse "请求参数错误"
+// @Failure 500 {object} ErrorResponse "服务器错误"
+// @Router /api/user/answer/{record_id}/full [get]
 func GetFullAnswerResult(c *gin.Context) {
 	recordID := c.Param("record_id")
 	if recordID == "" {
@@ -331,14 +409,30 @@ func GetFullAnswerResult(c *gin.Context) {
 }
 
 
-// 构建完整答题结果
+// buildFullResponse 构建完整答题结果
+// @Summary 构建包含用户答案和正确答案的详细答题记录
+// @Description 通过用户的答题记录和试卷信息，构建完整的答题结果
+// @Tags exam_answer
+// @Accept json
+// @Produce json
+// @Param record body AnswerResponse true "答题记录"
+// @Param paper body ExamPaper true "试卷信息"
+// @Success 200 {object} FullAnswerResponse "返回完整的答题记录"
+// @Failure 500 {object} ErrorResponse "服务器错误"
+// @Router /api/exam/fullresult [post]
 func buildFullResponse(record *AnswerResponse, paper *ExamPaper) *FullAnswerResponse {
     // 解析用户答案
     var userAnswers map[string]struct {
         Answer interface{} `json:"answer"`
         Score  int         `json:"score"`
     }
-    if err := json.Unmarshal(record.Answers, &userAnswers); err != nil {
+    // 断言 record.Answers 为 []byte
+    answersBytes, ok := record.Answers.([]byte)
+    if !ok {
+        log.Printf("record.Answers 断言为 []byte 失败，实际类型: %T", record.Answers)
+        return nil
+    }
+    if err := json.Unmarshal(answersBytes, &userAnswers); err != nil {
         log.Printf("解析用户答案失败: %v", err)
         return nil
     }
@@ -432,7 +526,17 @@ func normalizeAnswer(answer interface{}) []int {
 	}
 }
 
-// 判断答案是否正确，兼容单选/多选，顺序无关
+// isAnswerCorrect 判断答案是否正确，兼容单选/多选，顺序无关
+// @Summary 判断用户的答案是否正确
+// @Description 判断用户答案和正确答案是否一致，兼容顺序不同的情况
+// @Tags exam
+// @Accept json
+// @Produce json
+// @Param question body Question true "试题信息"
+// @Param userAnswer body interface{} true "用户的答案"
+// @Success 200 {boolean} true "返回是否正确"
+// @Failure 400 {object} ErrorResponse "请求参数错误"
+// @Router /api/exam/iscorrect [post]
 func isAnswerCorrect(q Question, userAnswer interface{}) bool {
 	correct := normalizeAnswer(q.CorrectAnswer)
 	user := normalizeAnswer(userAnswer)
@@ -454,7 +558,16 @@ func isAnswerCorrect(q Question, userAnswer interface{}) bool {
 }
 
 
-// 修改 getAnswerRecord 返回 *AnswerResponse 而不是 map
+// getAnswerRecord 获取答题记录
+// @Summary 获取用户的答题记录
+// @Description 通过答题记录ID获取用户答题记录
+// @Tags exam_answer
+// @Accept json
+// @Produce json
+// @Param record_id path string true "答题记录ID"
+// @Success 200 {object} AnswerResponse "返回用户答题记录"
+// @Failure 500 {object} ErrorResponse "服务器错误"
+// @Router /api/exam/answerrecord/{record_id} [get]
 func getAnswerRecord(recordID string) (*AnswerResponse, error) {
     redisKey := fmt.Sprintf("exam_answer:%s", recordID)
     result, err := utils.RedisClient.HGetAll(utils.Ctx, redisKey).Result()
@@ -486,7 +599,16 @@ func getAnswerRecord(recordID string) (*AnswerResponse, error) {
     }, nil
 }
 
-// getExamPaper fetches the exam paper details from Redis using the provided exam UUID
+// getExamPaper 获取试卷信息
+// @Summary 获取试卷信息
+// @Description 根据试卷UUID获取试卷信息
+// @Tags exam_answer
+// @Accept json
+// @Produce json
+// @Param exam_uuid path string true "试卷UUID"
+// @Success 200 {object} ExamPaper "返回试卷信息"
+// @Failure 500 {object} ErrorResponse "服务器错误"
+// @Router /api/exam/paper/{exam_uuid} [get]
 func getExamPaper(examUUID string) (*ExamPaper, error) {
     // Create the Redis key to fetch the exam paper
     redisKey := fmt.Sprintf("exam_paper:%s", examUUID)
