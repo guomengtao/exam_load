@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gin-go-test/utils"
+	"sort"
 )
 
 // 数据结构定义
@@ -41,9 +42,10 @@ type AnswerResponse struct {
 
 // 新增数据结构
 type ExamPaper struct {
-    ID       int        `json:"id"`
-    Title    string     `json:"title"`
-    Questions []Question `json:"questions"`
+    ID          int        `json:"id"`
+    Title       string     `json:"title"`
+    Description string     `json:"description"`
+    Questions   []Question `json:"questions"`
 }
 
 type Question struct {
@@ -68,6 +70,8 @@ type FullAnswerResponse struct {
     UserID      string               `json:"user_id"`
     Duration    int                  `json:"duration"`
     Score       int                  `json:"score"`
+    Title       string               `json:"title"`
+    Description string               `json:"description"`
 }
 
 type QuestionWithAnswer struct {
@@ -271,13 +275,13 @@ func sendErrorResponse(c *gin.Context, code int, message string, err error) {
 
 // 解析 bitmask
 func decodeCorrectAnswer(bitmask int) []int {
-	correctAnswers := []int{}
+	var answers []int
 	for i := 0; i < 32; i++ {
 		if (bitmask & (1 << i)) != 0 {
-			correctAnswers = append(correctAnswers, i)
+			answers = append(answers, i)
 		}
 	}
-	return correctAnswers
+	return answers
 }
 
 // GetFullAnswerResult 获取完整答题结果（包含题目信息和正确答案）
@@ -344,6 +348,7 @@ func buildFullResponse(record *AnswerResponse, paper *ExamPaper) *FullAnswerResp
     for _, q := range paper.Questions {
         qid := strconv.Itoa(q.ID)
         if userAns, exists := userAnswers[qid]; exists {
+            isCorrect := isAnswerCorrect(q, userAns.Answer)
             questions = append(questions, QuestionWithAnswer{
                 ID:            q.ID,
                 Title:         q.Title,
@@ -352,7 +357,20 @@ func buildFullResponse(record *AnswerResponse, paper *ExamPaper) *FullAnswerResp
                 Score:         q.Score,
                 CorrectAnswer: q.CorrectAnswer,
                 UserAnswer:    userAns.Answer,
-                IsCorrect:     isAnswerCorrect(q, userAns.Answer),
+                IsCorrect:     isCorrect,
+                Analysis:      q.Analysis,
+            })
+        } else {
+            // 用户未答该题，也加入列表，isCorrect为false，UserAnswer为nil
+            questions = append(questions, QuestionWithAnswer{
+                ID:            q.ID,
+                Title:         q.Title,
+                Options:       q.Options,
+                Type:          q.Type,
+                Score:         q.Score,
+                CorrectAnswer: q.CorrectAnswer,
+                UserAnswer:    nil,
+                IsCorrect:     false,
                 Analysis:      q.Analysis,
             })
         }
@@ -369,36 +387,72 @@ func buildFullResponse(record *AnswerResponse, paper *ExamPaper) *FullAnswerResp
         UserID:      record.UserID,
         Duration:    record.Duration,
         Score:       record.Score,
+        Title:       paper.Title,
+        Description: paper.Description,
     }
 }
 
-// 判断答案是否正确
+// 标准化答案为 []int，兼容多种输入类型
+func normalizeAnswer(answer interface{}) []int {
+	switch v := answer.(type) {
+	case []interface{}:
+		var result []int
+		for _, item := range v {
+			switch iv := item.(type) {
+			case float64:
+				result = append(result, int(iv))
+			case int:
+				result = append(result, iv)
+			case json.Number:
+				if i, err := iv.Int64(); err == nil {
+					result = append(result, int(i))
+				}
+			}
+		}
+		return result
+	case []int:
+		return v
+	case []float64:
+		var result []int
+		for _, item := range v {
+			result = append(result, int(item))
+		}
+		return result
+	case float64:
+		return []int{int(v)}
+	case int:
+		return []int{v}
+	case json.Number:
+		if i, err := v.Int64(); err == nil {
+			return []int{int(i)}
+		}
+		return nil
+	default:
+		return nil
+	}
+}
+
+// 判断答案是否正确，兼容单选/多选，顺序无关
 func isAnswerCorrect(q Question, userAnswer interface{}) bool {
-    switch q.Type {
-    case "multi":
-        userAns, ok1 := userAnswer.([]interface{})
-        correctAns, ok2 := q.CorrectAnswer.([]interface{})
-        if !ok1 || !ok2 {
-            return false
-        }
-        return compareSlicesOrdered(userAns, correctAns)
-    default:
-        return userAnswer == q.CorrectAnswer
-    }
+	correct := normalizeAnswer(q.CorrectAnswer)
+	user := normalizeAnswer(userAnswer)
+	if correct == nil || user == nil {
+		return false
+	}
+	if len(correct) != len(user) {
+		return false
+	}
+	// 排序后比较
+	sort.Ints(correct)
+	sort.Ints(user)
+	for i, v := range correct {
+		if user[i] != v {
+			return false
+		}
+	}
+	return true
 }
 
-// 比较多选题的答案
-func compareSlicesOrdered(a, b []interface{}) bool {
-    if len(a) != len(b) {
-        return false
-    }
-    for i := range a {
-        if a[i] != b[i] {
-            return false
-        }
-    }
-    return true
-}
 
 // 修改 getAnswerRecord 返回 *AnswerResponse 而不是 map
 func getAnswerRecord(recordID string) (*AnswerResponse, error) {
@@ -446,25 +500,46 @@ func getExamPaper(examUUID string) (*ExamPaper, error) {
     // Parse the data into the ExamPaper struct
     var paper ExamPaper
     if err := json.Unmarshal([]byte(result), &paper); err != nil {
-        // If it's a stringified JSON array, we need to handle it differently
+        // If it's a stringified JSON object, try to parse as map
         var rawPaper map[string]interface{}
         if err := json.Unmarshal([]byte(result), &rawPaper); err != nil {
             return nil, fmt.Errorf("解析试卷数据失败: %v", err)
         }
-        // Assuming the 'questions' field is a stringified array in rawPaper, we can manually unmarshal it
-        if questionsJSON, ok := rawPaper["questions"].(string); ok {
+        // Parse questions field
+        questionsRaw, ok := rawPaper["questions"]
+        if !ok {
+            return nil, fmt.Errorf("试卷数据缺少 questions 字段")
+        }
+        switch questionsVal := questionsRaw.(type) {
+        case string:
             var questions []Question
-            if err := json.Unmarshal([]byte(questionsJSON), &questions); err != nil {
+            if err := json.Unmarshal([]byte(questionsVal), &questions); err != nil {
                 return nil, fmt.Errorf("解析试题数据失败: %v", err)
             }
             paper.Questions = questions
+        case []interface{}:
+            // Convert []interface{} to []Question
+            questionsBytes, err := json.Marshal(questionsVal)
+            if err != nil {
+                return nil, fmt.Errorf("序列化试题数据失败: %v", err)
+            }
+            var questions []Question
+            if err := json.Unmarshal(questionsBytes, &questions); err != nil {
+                return nil, fmt.Errorf("解析试题数据失败: %v", err)
+            }
+            paper.Questions = questions
+        default:
+            return nil, fmt.Errorf("未知的 questions 字段类型")
         }
-        // 其他字段赋值
+        // 解析其他字段
         if id, ok := rawPaper["id"].(float64); ok {
             paper.ID = int(id)
         }
         if title, ok := rawPaper["title"].(string); ok {
             paper.Title = title
+        }
+        if description, ok := rawPaper["description"].(string); ok {
+            paper.Description = description
         }
     }
 
