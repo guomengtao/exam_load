@@ -1,5 +1,17 @@
 .
 ├── Ai-todo.md
+├── app
+│   ├── controllers
+│   │   ├── admin_controller.go
+│   │   ├── admin_controller_test.go
+│   │   ├── hello.go
+│   │   └── main_test.go
+│   ├── models
+│   │   └── admin.go
+│   └── services
+│       ├── admin_service.go
+│       ├── admin_service_test.go
+│       └── main_test.go
 ├── ARCHITECTURE.md
 ├── auth
 │   ├── auth.go
@@ -7,15 +19,14 @@
 │   └── permission.go
 ├── config
 │   └── config.go
-├── -d
 ├── docs
 │   ├── docs.go
+│   ├── GEN_CURD.md
 │   ├── swagger.json
 │   └── swagger.yaml
 ├── gin.log
 ├── go.mod
 ├── go.sum
-├── -H
 ├── handlers
 │   ├── dbinfo.go
 │   ├── exam_answer.go
@@ -29,11 +40,9 @@
 │   ├── upload.go
 │   └── version.go
 ├── hello
+├── hello.log
 ├── LICENSE.md
 ├── main.go
-├── model
-│   ├── admin.go
-│   └── auth.go
 ├── output.log
 ├── package.json
 ├── package-lock.json
@@ -41,8 +50,6 @@
 ├── routes
 │   └── routes.go
 ├── run.sh
-├── shell
-│   └── enter-container.sh
 ├── static
 │   ├── exam_template.html
 │   ├── exam_write.html
@@ -64,8 +71,10 @@
 ├── tree.sh
 └── utils
     ├── db.go
+    ├── db_gorm.go
+    ├── db_sqlx.go
     ├── queue.go
     ├── redis.go
     └── status.go
 
-12 directories, 56 files
+14 directories, 63 files

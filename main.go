@@ -36,6 +36,8 @@ func main() {
 	// 初始化数据库和Redis
 	utils.InitDB()
 	utils.InitRedis()
+
+	utils.InitDBX()
 	// auth.InitDB(utils.DB) // 初始化认证模块
 
 	router := gin.Default()
