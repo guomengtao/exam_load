@@ -18,11 +18,15 @@ import (
     "github.com/swaggo/gin-swagger"
 	_ "gin-go-test/docs"  // 修改为你的 go.mod 模块名
 	// "gin-go-test/auth"
+	"gin-go-test/app/services"
 )
 
 func main() {
 	// 启用控制台彩色日志
 	gin.ForceConsoleColor()
+
+	// task 
+	services.StartRedisWriter()
 	
 	// 创建日志文件
 	f, err := os.Create("gin.log")
