@@ -25,8 +25,7 @@ func main() {
 	// 启用控制台彩色日志
 	gin.ForceConsoleColor()
 
-	// task 
-	services.StartRedisWriter()
+	 
 	
 	// 创建日志文件
 	f, err := os.Create("gin.log")
@@ -43,6 +42,9 @@ func main() {
 
 	utils.InitDBX()
 	// auth.InitDB(utils.DB) // 初始化认证模块
+
+	// 启动所有任务
+    services.StartAllTasks()
 
 	router := gin.Default()
 	

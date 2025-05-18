@@ -5,7 +5,8 @@ import (
 	"gin-go-test/handlers"
 	"gin-go-test/auth" // 新增认证模块
 	"gin-go-test/app/controllers" // 修改为你的实际模块路径
-		"gin-go-test/utils"
+	"gin-go-test/utils"
+	// "gin-go-test/app/services"
 )
 
 func SetupRoutes(router *gin.Engine) {
@@ -37,6 +38,8 @@ func SetupRoutes(router *gin.Engine) {
 		public.GET("/admins", controllers.GetAdminsHandler)
 		public.PUT("/admin/:id/password", controllers.UpdateAdminPasswordHandler)
  		public.GET("/status", controllers.StatusHandler)
+		public.POST("/task/control", controllers.TaskControlHandler)
+		
 
 
 		public.GET("/roles", controllers.GetRolesHandler)
