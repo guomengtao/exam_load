@@ -39,6 +39,7 @@ func SetupRoutes(router *gin.Engine) {
 		public.PUT("/admin/:id/password", controllers.UpdateAdminPasswordHandler)
  		public.GET("/status", controllers.StatusHandler)
 		public.POST("/task/control", controllers.TaskControlHandler)
+		public.GET("/export_answers", services.ExportAnswersHandler)
 		
 
 

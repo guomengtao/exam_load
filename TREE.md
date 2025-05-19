@@ -7,16 +7,29 @@
 │   │   ├── hello.go
 │   │   ├── main_test.go
 │   │   ├── role_controller.go
-│   │   └── role_controller_test.go
+│   │   ├── role_controller_test.go
+│   │   ├── status_controller.go
+│   │   └── task_controller.go
 │   ├── models
 │   │   ├── admin.go
+│   │   ├── exam_answer.go
 │   │   └── role.go
 │   └── services
 │       ├── admin_service.go
 │       ├── admin_service_test.go
+│       ├── ExportAnswersToCSV.go
 │       ├── main_test.go
+│       ├── mock_user_pool.go
+│       ├── mock_user_pool_test.go
+│       ├── redis_cleaner.go
+│       ├── redis_cleaner_test.go
+│       ├── redis_importer.go
+│       ├── redis_importer_test.go
+│       ├── redis_writer.go
+│       ├── redis_writer_test.go
 │       ├── role_service.go
-│       └── role_service_test.go
+│       ├── role_service_test.go
+│       └── task_runner.go
 ├── ARCHITECTURE.md
 ├── auth
 │   ├── auth.go
@@ -25,6 +38,7 @@
 ├── config
 │   └── config.go
 ├── docs
+│   ├── data_import_export.md
 │   ├── docs.go
 │   ├── GEN_CURD.md
 │   ├── goapp_structure.md
@@ -59,6 +73,7 @@
 ├── static
 │   ├── exam_template.html
 │   ├── exam_write.html
+│   ├── exports
 │   ├── hello.html
 │   ├── index.html
 │   └── uploads
@@ -86,6 +101,7 @@
 │       │   │   ├── exam_4c2cb46e-6feb-4834-a0be-59e91c19ceb7.jpg
 │       │   │   ├── exam_4ccd2670-213f-4623-8383-525fc1f05e4c.jpg
 │       │   │   ├── exam_5be5b228-56ca-422c-a137-21f3ae4fc529.jpg
+│       │   │   ├── exam_6062ded1-8011-4173-9b07-0e17a3ce2ff0.jpg
 │       │   │   ├── exam_60ee7446-9eeb-4fa2-a318-068a8530a4de.png
 │       │   │   ├── exam_717a9368-aed7-49cc-9741-c9b332f1abc7.jpg
 │       │   │   ├── exam_733d1b8a-a6d2-428c-b3fb-d4d1c758009a.jpg
@@ -130,4 +146,4 @@
     ├── redis.go
     └── status.go
 
-14 directories, 116 files
+15 directories, 131 files

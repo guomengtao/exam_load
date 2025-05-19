@@ -30,11 +30,24 @@ func writeOneRecord() {
  
     now := time.Now().Unix()
 
-    // 随机中文姓名生成
-    surnames := []string{"张", "王", "李", "赵", "刘", "陈", "杨", "黄", "吴", "周"}
-    names := []string{"伟", "芳", "娜", "敏", "静", "丽", "强", "磊", "军", "洋"}
-    rand.Seed(time.Now().UnixNano())
-    username := surnames[rand.Intn(len(surnames))] + names[rand.Intn(len(names))]
+    // 从 Redis 中随机读取一个用户名和用户ID
+    poolMember, err := utils.RedisClient.SRandMember(utils.Ctx, "mock:user_pool").Result()
+    if err != nil {
+        fmt.Println("❌ 获取模拟用户失败:", err)
+        return
+    }
+
+    var user struct {
+        UserID   string `json:"user_id"`
+        Username string `json:"username"`
+    }
+    if err := json.Unmarshal([]byte(poolMember), &user); err != nil {
+        fmt.Println("❌ 模拟用户解析失败:", err)
+        return
+    }
+
+    userID := user.UserID
+    username := user.Username
 
     // 随机选择多选题答案组合 [0,1,2,3] 的非空子集
     options := []int{0, 1, 2, 3}
@@ -67,7 +80,7 @@ func writeOneRecord() {
     data := map[string]interface{}{
         "answer_uid":  answerUID,
         "user_uuid":   uuid.New().String(),
-        "user_id":     uuid.New().String(),
+        "user_id":     userID,
         "username":    username,
         "exam_id":     "15",
         "exam_uuid":   "40a89290-0ff9-4c01-a803-57155a24985c",
