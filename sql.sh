@@ -52,7 +52,7 @@ for TABLE in $TABLES; do
     echo "-- ----------------------------"
     echo "-- Sample data for \`$TABLE\` (最多3条)"
     echo "-- ----------------------------"
-    mysqldump -h$DB_HOST -P$DB_PORT -u$DB_USER -p$DB_PASS --skip-comments --no-create-info --order-by-primary --where="1 ORDER BY id ASC LIMIT 3" $DB_NAME $TABLE
+    mysqldump -h$DB_HOST -P$DB_PORT -u$DB_USER -p$DB_PASS --skip-comments --no-create-info --order-by-primary --where="1 ORDER BY id ASC LIMIT 2" $DB_NAME $TABLE
   } > "$DATA_FILE"
 
   echo "✅ 结构+数据导出：$DATA_FILE"
@@ -67,27 +67,26 @@ if [ -z "$commit_msg" ]; then
   commit_msg="代码和数据库结构同步更新"
 fi
 
-# 暂存所有改动文件（代码 + 数据库 + 文档等）
-git add .
+ # 显示当前git状态
+git status
 
-# 检查是否有实际改动
-if git diff --cached --quiet; then
-  echo "无改动，无需提交。"
+# 交互提示，读用户输入
+read -p "是否提交改动？(y/n): " answer
+
+if [[ "$answer" =~ ^[Yy]$ ]]; then
+  echo "继续提交..."
+
+  # 你后续的git add/commit/push操作
+  git add .
+  read -p "请输入提交信息: " commit_msg
+  if [ -z "$commit_msg" ]; then
+    commit_msg="代码和数据库结构同步更新"
+  fi
+  git commit -m "$commit_msg"
+  git push origin main
+
+  echo "提交并推送完成！"
+else
+  echo "已取消提交。"
   exit 0
 fi
-
-# 提交改动
-git commit -m "$commit_msg"
-if [ $? -ne 0 ]; then
-  echo "❌ Git 提交失败"
-  exit 1
-fi
-
-# 推送到远程仓库
-git push 
-if [ $? -ne 0 ]; then
-  echo "❌ Git 推送失败"
-  exit 1
-fi
-
-echo "✅ 提交并推送成功，信息：$commit_msg"
