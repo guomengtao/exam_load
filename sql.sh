@@ -84,7 +84,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # 推送到远程仓库
-git push origin main
+git push 
 if [ $? -ne 0 ]; then
   echo "❌ Git 推送失败"
   exit 1
