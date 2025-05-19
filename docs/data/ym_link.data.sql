@@ -35,7 +35,7 @@ CREATE TABLE `ym_link` (
 
 
 -- ----------------------------
--- Sample data for `ym_link` (最多3条)
+-- Sample data for `ym_link` (最早2条)
 -- ----------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;

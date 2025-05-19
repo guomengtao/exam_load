@@ -41,7 +41,7 @@ CREATE TABLE `task_log` (
 
 
 -- ----------------------------
--- Sample data for `task_log` (最多3条)
+-- Sample data for `task_log` (最早2条)
 -- ----------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;

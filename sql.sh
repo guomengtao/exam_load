@@ -50,7 +50,7 @@ for TABLE in $TABLES; do
 
     echo
     echo "-- ----------------------------"
-    echo "-- Sample data for \`$TABLE\` (最多3条)"
+    echo "-- Sample data for \`$TABLE\` (最早2条)"
     echo "-- ----------------------------"
     mysqldump -h$DB_HOST -P$DB_PORT -u$DB_USER -p$DB_PASS --skip-comments --no-create-info --order-by-primary --where="1 ORDER BY id ASC LIMIT 2" $DB_NAME $TABLE
   } > "$DATA_FILE"
@@ -66,6 +66,9 @@ commit_msg="$1"
 if [ -z "$commit_msg" ]; then
   commit_msg="代码和数据库结构同步更新"
 fi
+ 
+
+
 
  # 显示当前git状态
 git status
@@ -78,6 +81,13 @@ if [[ "$answer" =~ ^[Yy]$ ]]; then
 
   # 你后续的git add/commit/push操作
   git add .
+
+  # 检查是否有实际改动
+  if git diff --cached --quiet; then
+    echo "无改动，无需提交。"
+    exit 0
+  fi
+
   read -p "请输入提交信息: " commit_msg
   if [ -z "$commit_msg" ]; then
     commit_msg="代码和数据库结构同步更新"

@@ -41,7 +41,7 @@ CREATE TABLE `ym_guest` (
 
 
 -- ----------------------------
--- Sample data for `ym_guest` (最多3条)
+-- Sample data for `ym_guest` (最早2条)
 -- ----------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;

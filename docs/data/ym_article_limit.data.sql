@@ -42,7 +42,7 @@ CREATE TABLE `ym_article_limit` (
 
 
 -- ----------------------------
--- Sample data for `ym_article_limit` (最多3条)
+-- Sample data for `ym_article_limit` (最早2条)
 -- ----------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;

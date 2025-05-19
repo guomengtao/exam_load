@@ -36,7 +36,7 @@ CREATE TABLE `tm_role_permission` (
 
 
 -- ----------------------------
--- Sample data for `tm_role_permission` (最多3条)
+-- Sample data for `tm_role_permission` (最早2条)
 -- ----------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
