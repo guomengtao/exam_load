@@ -1,12 +1,16 @@
 package auth
 
 import (
+	"context"
 	"errors"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"gin-go-test/app/services"
+	"gin-go-test/utils"
 )
 
 const jwtSecret = "your-secret-key"
@@ -18,10 +22,64 @@ type LoginRequest struct {
 
 // LoginHandler 处理登录
 func LoginHandler(c *gin.Context) {
-	// 临时跳过验证，直接返回测试Token
+	var req LoginRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":    400,
+			"message": "参数错误",
+			"data":    nil,
+		})
+		return
+	}
+
+	cacheKey := "admin:" + req.Username
+	adminData, err := utils.RedisClient.HGetAll(context.Background(), cacheKey).Result()
+
+	// Fallback to DB if Redis miss or empty
+	if err != nil || len(adminData) == 0 {
+		admin, err := services.GetAdminByUsername(req.Username)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"code":    401,
+				"message": "用户不存在",
+				"data":    nil,
+			})
+			return
+		}
+
+		// Save to Redis
+		roleIDStr := strconv.Itoa(admin.RoleID)
+		utils.RedisClient.HSet(context.Background(), cacheKey, map[string]interface{}{
+			"id":       admin.ID,
+			"username": admin.Username,
+			"password": admin.Password,
+			"role_id":  admin.RoleID,
+		})
+		utils.RedisClient.Expire(context.Background(), cacheKey, 24*time.Hour)
+
+		adminData = map[string]string{
+			"id":       strconv.Itoa(admin.ID),
+			"username": admin.Username,
+			"password": admin.Password,
+			"role_id":  roleIDStr,
+		}
+	}
+
+	// Verify password
+	if !utils.CheckPassword(req.Password, adminData["password"]) {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":    401,
+			"message": "密码错误",
+			"data":    nil,
+		})
+		return
+	}
+
+	// Generate JWT
+	adminID, _ := strconv.Atoi(adminData["id"])
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"admin_id": 1,
-		"role":     "admin",
+		"admin_id": adminID,
+		"role_id":  adminData["role_id"],
 		"exp":      time.Now().Add(24 * time.Hour).Unix(),
 	})
 

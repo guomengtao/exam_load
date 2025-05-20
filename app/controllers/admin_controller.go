@@ -17,7 +17,11 @@ func GetAdminsHandler(c *gin.Context) {
         c.JSON(http.StatusInternalServerError, gin.H{"message": "查询失败"})
         return
     }
-    c.JSON(http.StatusOK, gin.H{"data": admins})
+    c.JSON(http.StatusOK, gin.H{
+        "code": 200,
+        "message": "Query successful",
+        "data": admins,
+    })
 }
 
 func UpdateAdminPasswordHandler(c *gin.Context) {

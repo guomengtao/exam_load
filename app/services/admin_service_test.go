@@ -64,3 +64,36 @@ func TestUpdateAdminPassword(t *testing.T) {
 
 	fmt.Println("✅ 密码更新成功")
 }
+
+func TestGetJWTInfo(t *testing.T) {
+	token := os.Getenv("TEST_JWT_TOKEN")
+	if token == "" {
+		t.Fatal("❌ 必须设置 TEST_JWT_TOKEN 环境变量")
+	}
+
+	claims, err := utils.GetJWTInfo(token)
+	if err != nil {
+		t.Fatalf("❌ 获取 JWT 信息失败: %v", err)
+	}
+
+	fmt.Println("✅ JWT 信息解析成功:")
+	for k, v := range claims {
+		fmt.Printf("  %s: %v\n", k, v)
+	}
+}
+
+func TestUpdateOwnPassword(t *testing.T) {
+	token := os.Getenv("TEST_JWT_TOKEN")
+	if token == "" {
+		t.Fatal("❌ TEST_JWT_TOKEN not set")
+	}
+
+	newPassword := "newStrongPass123454"
+
+	err := UpdateOwnPassword(newPassword, token)
+	if err != nil {
+		t.Fatalf("❌ Password update failed: %v", err)
+	}
+
+	t.Log("✅ Password updated successfully.")
+}
