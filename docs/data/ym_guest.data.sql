@@ -43,15 +43,4 @@ CREATE TABLE `ym_guest` (
 -- ----------------------------
 -- Sample data for `ym_guest` (最早2条)
 -- ----------------------------
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
+INSERT INTO `ym_guest` VALUES (1,'fsadf','dfasdf@qq.com','www.122.com','sdfsdf','',1,0,0,1469539481),(2,'fsadf2','dfasd2f@qq.com','www.12222.com','sdfsdf2','',1,0,0,1469539687),(3,'童攀','tongpan@qq.com','www.12222.com','童攀童攀童攀童攀童攀童攀童攀童攀','',1,0,0,1469539721),(4,'童年','tongnian@qq.com','www.12222.com','童年童年童年童年童年童年童年童年童年童年童年童年童年','',1,0,0,1469539739),(5,'天天','tongnian@qq.com','www.12222.com','天天天天天天天天天天天天天天天天天天天天','',1,0,0,1469539760),(6,'dfsd','dfasdf@qq.com','www.12222.com','fasdfsdfsdf','',1,0,0,1469542092),(7,'dfsd','dfasdf@qq.com','www.12222.com','sdfasdfsdf','',1,0,0,1469542468);

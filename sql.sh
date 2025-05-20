@@ -46,21 +46,19 @@ for TABLE in $TABLES; do
     echo "-- ----------------------------"
     echo "-- Table structure for \`$TABLE\`"
     echo "-- ----------------------------"
-    mysqldump -h$DB_HOST -P$DB_PORT -u$DB_USER -p$DB_PASS --no-data --skip-comments $DB_NAME $TABLE
+    mysqldump --no-tablespaces -h$DB_HOST -P$DB_PORT -u$DB_USER -p$DB_PASS --no-data --skip-comments $DB_NAME $TABLE
 
     echo
     echo "-- ----------------------------"
     echo "-- Sample data for \`$TABLE\` (最早2条)"
     echo "-- ----------------------------"
-    mysqldump -h$DB_HOST -P$DB_PORT -u$DB_USER -p$DB_PASS --skip-comments --no-create-info --order-by-primary --where="1 ORDER BY id ASC LIMIT 2" $DB_NAME $TABLE
+    mysqldump --no-tablespaces -h$DB_HOST -P$DB_PORT -u$DB_USER -p$DB_PASS --skip-comments --no-create-info --where="1" $DB_NAME $TABLE | awk '/INSERT INTO/ {count++; if (count <= 2) print}'
   } > "$DATA_FILE"
 
   echo "✅ 结构+数据导出：$DATA_FILE"
 done
 
 echo "✅ 所有表处理完成，结果保存在：$OUTPUT_DIR"
-
-#!/bin/bash
 
 commit_msg="$1"
 if [ -z "$commit_msg" ]; then
