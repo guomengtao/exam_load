@@ -5,7 +5,7 @@ import (
 )
 
 func TestExportExamAnswersToCSV(t *testing.T) {
-    examUUID := "some-sample-exam-uuid"  // Replace with actual exam UUID if needed
+    examUUID := "40a89290-0ff9-4c01-a803-57155a24985c"  // Replace with actual exam UUID if needed
     school := ""                         // Empty string means no school filter
     limit := 1000
     offset := 0
