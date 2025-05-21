@@ -5,6 +5,8 @@ import (
 	"gin-go-test/app/models"
 	"gin-go-test/utils"
 	"errors"
+	"context"
+	"time"
 	
  )
 
@@ -28,13 +30,32 @@ func UpdateOwnPassword(newPassword string, tokenString string) error {
 	}
 	fmt.Println("JWT claims:", claims)
 
+	if len(newPassword) < 6 {
+		return errors.New("密码长度不能少于 6 位")
+	}
+
+	fmt.Println("🔐 开始加密密码...")
+	hashedPassword, err := utils.HashPassword(newPassword)
+	if err != nil {
+		return errors.New("密码加密失败: " + err.Error())
+	}
+	fmt.Println("✅ 密码加密完成:", hashedPassword)
+
 	adminIDFloat, ok := claims["admin_id"].(float64)
 	if !ok {
 		return errors.New("token 中未找到有效的管理员 ID")
 	}
 	adminID := int(adminIDFloat)
 
-	hashedPassword := utils.HashPassword(newPassword)
+	var current models.Admin
+	err = utils.DBX.Get(&current, "SELECT password FROM "+utils.PrefixTable("admin")+" WHERE id = ?", adminID)
+	if err != nil {
+		return errors.New("无法获取当前密码: " + err.Error())
+	}
+	fmt.Println("🧾 当前密码哈希:", current.Password)
+
+	fmt.Println("🆕 将要写入的新密码哈希:", hashedPassword)
+
 	query := "UPDATE " + utils.PrefixTable("admin") + " SET password = ? WHERE id = ?"
 	result, err := utils.DBX.Exec(query, hashedPassword, adminID)
 	if err != nil {
@@ -48,6 +69,24 @@ func UpdateOwnPassword(newPassword string, tokenString string) error {
 	if rowsAffected == 0 {
 		return errors.New("未找到该管理员")
 	}
+	// Refresh Redis cache with updated password
+	var admin models.Admin
+	query = "SELECT id, username, role_id FROM " + utils.PrefixTable("admin") + " WHERE id = ?"
+	err = utils.DBX.Get(&admin, query, adminID)
+	if err != nil {
+		return errors.New("获取管理员信息失败")
+	}
+
+	cacheKey := "admin:" + admin.Username
+	utils.RedisClient.Del(context.Background(), cacheKey)
+	utils.RedisClient.HSet(context.Background(), cacheKey, map[string]interface{}{
+		"id":       admin.ID,
+		"username": admin.Username,
+		"password": hashedPassword,
+		"role_id":  admin.RoleID,
+	})
+	utils.RedisClient.Expire(context.Background(), cacheKey, 24*time.Hour)
+
 	return nil
 }
 

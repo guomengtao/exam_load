@@ -39,4 +39,4 @@ CREATE TABLE `tm_admin` (
 -- ----------------------------
 -- Sample data for `tm_admin` (最早2条)
 -- ----------------------------
-INSERT INTO `tm_admin` VALUES (1,'admin','$2a$10$5mRTokJqq5XAlZjRaGa8wuMSi6Oqn1YNcNgwLHEotvKPjMHBU1JSq',1,'2025-05-09 07:05:25');
+INSERT INTO `tm_admin` VALUES (1,'admin','$2a$10$ZLIM8AbrAcacjBZGodN2VeddP8BOBBzL3YTyXeHqtpjP000hPYzYG',1,'2025-05-09 07:05:25');

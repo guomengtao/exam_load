@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"gin-go-test/app/models"
 	"gin-go-test/utils"
+	"gin-go-test/app/services"
 	"golang.org/x/crypto/bcrypt"
 	"github.com/gin-gonic/gin"
 )
@@ -71,4 +72,30 @@ func UpdateAdminPassword(adminID int, newPassword string) error {
     }
 
     return nil
+}
+
+func UpdateOwnPassword(c *gin.Context) {
+	var req struct {
+		NewPassword string `json:"new_password"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "请求参数错误"})
+		return
+	}
+
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "未提供 Authorization 头"})
+		return
+	}
+	tokenString := utils.ExtractToken(authHeader)
+
+	err := services.UpdateOwnPassword(req.NewPassword, tokenString)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"code": 200, "message": "密码修改成功"})
 }

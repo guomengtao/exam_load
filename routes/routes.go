@@ -35,7 +35,7 @@ func SetupRoutes(router *gin.Engine) {
 
 		// 临时开放 
 		public.GET("/admins", controllers.GetAdminsHandler)
-		public.PUT("/admin/:id/password", controllers.UpdateAdminPasswordHandler)
+		public.PUT("/admin/password", controllers.UpdateOwnPassword)
  		public.GET("/status", controllers.StatusHandler)
 		public.POST("/task/control", controllers.TaskControlHandler)
 		public.GET("/export_answers", controllers.ExportAnswersHandler)

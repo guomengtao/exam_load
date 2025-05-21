@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"github.com/golang-jwt/jwt/v4"
+	"strings"
 )
 
 // GetJWTInfo decodes a raw JWT string and returns its claims
@@ -36,4 +37,13 @@ func GetJWTInfo(tokenString string) (map[string]interface{}, error) {
 	}
 
 	return nil, errors.New("invalid token")
+}
+ 
+
+// ExtractToken 提取 Authorization 头中的 Bearer Token
+func ExtractToken(authHeader string) string {
+	if strings.HasPrefix(authHeader, "Bearer ") {
+		return strings.TrimPrefix(authHeader, "Bearer ")
+	}
+	return authHeader
 }
