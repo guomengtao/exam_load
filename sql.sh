@@ -91,7 +91,7 @@ if [[ "$answer" =~ ^[Yy]$ ]]; then
     commit_msg="代码和数据库结构同步更新"
   fi
   git commit -m "$commit_msg"
-  git push origin main
+  git push 
 
   echo "提交并推送完成！"
 else
