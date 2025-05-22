@@ -6,17 +6,22 @@ import (
 	"gin-go-test/auth" // 新增认证模块
 	"gin-go-test/app/controllers" // 修改为你的实际模块路径
 	"gin-go-test/utils"
+ 
  )
 
 func SetupRoutes(router *gin.Engine) {
+
+	// 手动调用生成器的注册入口
+	RegisterGeneratedRoutes(router)
+
 	// 公共路由（无需认证）
 	public := router.Group("/api")
 	{
 		utils.InitGorm();
 		// 系统状态接口
 		public.GET("/hello_world", handlers.HelloWorld)
-		public.GET("/hello", controllers.HelloHandler)
-		router.GET("/gen-hello", controllers.HelloHandler)
+		// public.GET("/hello", controllers.HelloHandler)
+		// router.GET("/gen-hello", controllers.HelloHandler)
 
 		public.GET("/mysql", handlers.MySQLStatus)
 		public.GET("/redis", handlers.RedisStatus)

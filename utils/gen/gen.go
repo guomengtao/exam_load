@@ -5,6 +5,7 @@ import (
     "fmt"
     "log"
     "os"
+    "strings"
 
     "github.com/joho/godotenv"
     "gin-go-test/utils/genlib"
@@ -46,24 +47,36 @@ func main() {
     }
 
     if cmdMap['c'] {
-        if err := genlib.GenerateController(tableName, moduleName); err != nil {
-            log.Fatalf("GenerateController error: %v", err)
+        if err := genlib.GenerateControllerWithAppend (tableName, moduleName); err != nil {
+            log.Fatalf("GenerateControllerWithAppend  error: %v", err)
         }
         fmt.Println("✅ 控制器生成成功")
+        fmt.Printf("📁 生成文件路径: app/controllers/%s_controller.go\n", tableName)
     }
 
     if cmdMap['r'] {
-        // routes := []genlib.RouteInfo{
-        //     {PackageName: tableName, RegisterFunc: "Register" + genlib.ToCamelCase(tableName) + "Routes"},
-        // }
-        // if err := genlib.GenerateGenRoutesFile(routes, moduleName); err != nil {
-        //     log.Println("❌ 生成路由注册失败:", err)
-        // }
+        routes := []genlib.RouteInfo{
+            {PackageName: tableName, RegisterFunc: "Register" + strings.Title(tableName) + "Routes"},
+        }
+         if err := genlib.GenerateGenRoutesFile(routes,moduleName); err != nil {
+            log.Println("❌ 生成路由注册失败:", err)
+        } else {
+            fmt.Println("📁 路由注册文件: routes/gen_routes.go")
+        }
     }
 
     if cmdMap['k'] {
-        // if err := genlib.GenerateSkeleton(tableName, moduleName); err != nil {
-        //     log.Println("❌ 生成骨架失败:", err)
-        // }
+        overwrite := true // 可根据实际需要设为 false
+        if err := genlib.GenerateSkeletonWithAppend(tableName, moduleName, overwrite); err != nil {
+            log.Println("❌ 生成骨架失败:", err)
+        }
+    }
+    if cmdMap['m'] {
+        err := genlib.GenerateModelFromTable(tableName)
+        if err != nil {
+            log.Fatalf("生成模型失败: %v", err)
+        } else {
+            log.Println("✅ 模型生成成功")
+        }
     }
 }

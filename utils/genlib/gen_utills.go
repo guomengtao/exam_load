@@ -27,3 +27,13 @@ func writeFileWithPrompt(path string, content []byte, force bool) error {
 	}
 	return os.WriteFile(path, content, 0644)
 }
+
+func ToCamelCase(s string) string {
+	parts := strings.Split(s, "_")
+	for i, p := range parts {
+		if len(p) > 0 {
+			parts[i] = strings.ToUpper(string(p[0])) + strings.ToLower(p[1:])
+		}
+	}
+	return strings.Join(parts, "")
+}
