@@ -16,6 +16,8 @@ func SetupRoutes(router *gin.Engine) {
 		// 系统状态接口
 		public.GET("/hello_world", handlers.HelloWorld)
 		public.GET("/hello", controllers.HelloHandler)
+		router.GET("/gen-hello", controllers.HelloHandler)
+
 		public.GET("/mysql", handlers.MySQLStatus)
 		public.GET("/redis", handlers.RedisStatus)
 		public.GET("/version", handlers.GetVersion)
