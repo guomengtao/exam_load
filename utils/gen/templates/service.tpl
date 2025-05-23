@@ -1,5 +1,3 @@
-
-
 package services
 
 import (
@@ -25,4 +23,8 @@ func (s *{{.ServiceName}}Service) GetCount() (int64, error) {
 	var count int64
 	err := s.db.Model(&models.{{.ServiceName}}{}).Count(&count).Error
 	return count, err
+}
+
+func (s *{{.ServiceName}}Service) GetDB() *gorm.DB {
+	return s.db
 }

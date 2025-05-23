@@ -30,7 +30,7 @@ CREATE TABLE `tm_exam_answers` (
   `exam_uuid` varchar(64) DEFAULT '' COMMENT '试卷UUID',
   `exam_id` int(3) DEFAULT NULL COMMENT '试卷ID',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=179795 DEFAULT CHARSET=utf8mb4 COMMENT='学生作答表';
+) ENGINE=InnoDB AUTO_INCREMENT=358448 DEFAULT CHARSET=utf8mb4 COMMENT='学生作答表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

@@ -44,6 +44,9 @@ func main() {
         cmdMap['c'] = true
         cmdMap['r'] = true
         cmdMap['k'] = true
+        cmdMap['m'] = true
+        cmdMap['s'] = true
+        cmdMap['b'] = true
     }
 
     if cmdMap['c'] {

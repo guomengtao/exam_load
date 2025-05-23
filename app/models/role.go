@@ -1,8 +1,10 @@
-// app/models/role.go
 package models
 
+
+
+// Role 数据模型
 type Role struct {
-	ID   uint   `json:"id" gorm:"primaryKey"`
-	Name string `json:"name"`  // 比如 admin、editor
-	Desc string `json:"desc"`  // 描述：管理员、编辑者等
+	Id   int    `gorm:"column:id" json:"id"`
+	Name string `gorm:"column:name" json:"name"`
+	Desc string `gorm:"column:desc" json:"desc"`
 }

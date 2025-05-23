@@ -1,29 +1,50 @@
 package controllers
 
 import (
-	"strconv"
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"gin-go-test/utils/generated/controller"
+	"gin-go-test/app/biz"
 	"gin-go-test/app/services"
+	"gorm.io/gorm"
 )
 
-func GetRolesHandler(c *gin.Context) {
-	// 默认值 page=1, page_size=10
-	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
-	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "10"))
+// RoleController 控制器示例
+type RoleController struct {
+	skeleton *controller.RoleSkeleton
+}
 
-	result, err := services.GetRolesPaginated(page, pageSize)
-	if err != nil {
-		c.JSON(500, gin.H{"error": "获取角色失败"})
-		return
+// RegisterRoleRoutes 注册 Role 相关路由
+func RegisterRoleRoutes(router *gin.Engine, db *gorm.DB) {
+	group := router.Group("/api/role")
+	ctrl := &RoleController{
+		skeleton: controller.NewRoleSkeleton(
+			biz.NewRoleBiz(
+				services.NewRoleService(db),
+			),
+		),
 	}
 
-	// 返回格式：data + meta
-	c.JSON(200, gin.H{
-		"data": result.List,
-		"meta": gin.H{
-			"page":      result.Page,
-			"page_size": result.PageSize,
-			"total":     result.Total,
-		},
+	group.GET("/hello", ctrl.HelloHandler)
+	group.GET("/count", ctrl.CountHandler)
+}
+
+// HelloHandler 示例接口，调用骨架层对应方法
+func (ctrl *RoleController) HelloHandler(c *gin.Context) {
+	result := ctrl.skeleton.Hello()
+	c.JSON(http.StatusOK, gin.H{
+		"message": result,
+	})
+}
+
+// CountHandler 查询真实总数，调用 Biz 层
+func (ctrl *RoleController) CountHandler(c *gin.Context) {
+	ctrl.skeleton.CountHandler(c)
+}
+
+// GetRolesHandler 是兼容旧接口的独立函数
+func GetRolesHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Hello from app/controllers!",
 	})
 }

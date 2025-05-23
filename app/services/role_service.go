@@ -2,40 +2,29 @@ package services
 
 import (
 	"gin-go-test/app/models"
-	"gin-go-test/utils"
+	"gin-go-test/utils/generated/service"
+
+	"gorm.io/gorm"
 )
 
-type PaginatedRoles struct {
-	List      []models.Role `json:"data"`
-	Total     int64         `json:"-"`
-	Page      int           `json:"-"`
-	PageSize  int           `json:"-"`
+type RoleService struct {
+	skeleton *service.RoleServiceSkeleton
+	db       *gorm.DB
 }
 
-// 获取分页角色
-func GetRolesPaginated(page, pageSize int) (PaginatedRoles, error) {
-	var roles []models.Role
-	var total int64
-
-	offset := (page - 1) * pageSize
-
-	// 查询总数
-	if err := utils.GormDB.Model(&models.Role{}).Count(&total).Error; err != nil {
-		return PaginatedRoles{}, err
+func NewRoleService(db *gorm.DB) *RoleService {
+	return &RoleService{
+		skeleton: &service.RoleServiceSkeleton{},
+		db:       db,
 	}
+}
 
-	// 查询分页数据
-	if err := utils.GormDB.
-		Limit(pageSize).
-		Offset(offset).
-		Find(&roles).Error; err != nil {
-		return PaginatedRoles{}, err
-	}
+func (s *RoleService) GetCount() (int64, error) {
+	var count int64
+	err := s.db.Model(&models.Role{}).Count(&count).Error
+	return count, err
+}
 
-	return PaginatedRoles{
-		List:     roles,
-		Total:    total,
-		Page:     page,
-		PageSize: pageSize,
-	}, nil
+func (s *RoleService) GetDB() *gorm.DB {
+	return s.db
 }

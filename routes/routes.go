@@ -10,7 +10,7 @@ import (
 
 func SetupRoutes(router *gin.Engine) {
 
-	RegisterGeneratedRoutes(router)
+	
 
 	// 公共路由（无需认证）
 	public := router.Group("/api")
@@ -90,4 +90,7 @@ func SetupRoutes(router *gin.Engine) {
 
 	// 兼容旧路由（逐步迁移时可保留）
 	router.GET("/api/exam", handlers.GetExam) // 兼容旧GET请求
+	
+	// Auto Gen Router
+	RegisterGeneratedRoutes(router)
 }
