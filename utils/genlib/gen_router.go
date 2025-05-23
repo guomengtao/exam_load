@@ -67,7 +67,7 @@ func GenerateGenRoutesFile(routes []RouteInfo, moduleName string) error {
 	existingContent := string(fileData)
 
 	for _, r := range routes {
-		registerLine := fmt.Sprintf("\tcontrollers.Register%sRoutes(router)", ToCamelCase(r.PackageName))
+		registerLine := fmt.Sprintf("\tcontrollers.Register%sRoutes(router, utils.GormDB)", ToCamelCase(r.PackageName))
 		if strings.Contains(existingContent, registerLine) {
 			log.Printf("路由已存在，跳过追加: %s\n", registerLine)
 			continue
@@ -96,9 +96,10 @@ func buildRoutesContent(routes []RouteInfo, moduleName string) string {
 	var routesBuilder strings.Builder
 
 	importsBuilder.WriteString("\t\"gin-go-test/app/controllers\"\n")
+	importsBuilder.WriteString("\t\"gin-go-test/utils\"\n")
 
 	for _, r := range routes {
-		routesBuilder.WriteString(fmt.Sprintf("\tcontrollers.Register%sRoutes(router)\n", ToCamelCase(r.PackageName)))
+		routesBuilder.WriteString(fmt.Sprintf("\tcontrollers.Register%sRoutes(router, utils.GormDB)\n", ToCamelCase(r.PackageName)))
 	}
 
 	template := `package routes

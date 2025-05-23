@@ -12,5 +12,7 @@ func RegisterGeneratedRoutes(router *gin.Engine) {
 	controllers.RegisterHelloaRoutes(router)
 	controllers.RegisterKingRoutes(router)
 	controllers.RegisterBoyRoutes(router, utils.GormDB)
-	// === GENERATED ROUTES END ===
+
+	controllers.RegisterUserRoutes(router, utils.GormDB)
+// === GENERATED ROUTES END ===
 }
