@@ -33,16 +33,7 @@ var typeMap = map[string]string{
 	"tinyint":   "bool",
 }
 
-func toCamelCase(s string) string {
-	parts := strings.Split(s, "_")
-	for i, p := range parts {
-		parts[i] = strings.Title(p)
-	}
-	result := strings.Join(parts, "")
-	// Replace common initialisms
-	result = strings.ReplaceAll(result, "Id", "ID")
-	return result
-}
+ 
 
 func mapType(sqlType string) string {
 	for key, goType := range typeMap {

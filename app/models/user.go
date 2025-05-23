@@ -6,8 +6,8 @@ import (
 
 // User 数据模型
 type User struct {
-	ID          string    `gorm:"column:id" json:"id"`
-	Username    string    `gorm:"column:username" json:"username"`
+	ID string `gorm:"column:id;primaryKey;type:varchar(255)" json:"id"`
+ 	Username    string    `gorm:"column:username" json:"username"`
 	AdminID     string    `gorm:"column:admin_id" json:"admin_id"`
 	Province    string    `gorm:"column:province" json:"province"`
 	City        string    `gorm:"column:city" json:"city"`
@@ -21,3 +21,4 @@ type User struct {
 	SchoolLevel bool      `gorm:"column:school_level" json:"school_level"`
 	CreatedAt   time.Time `gorm:"column:created_at" json:"created_at"`
 }
+ 

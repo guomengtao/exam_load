@@ -41,6 +41,8 @@ func main() {
 	utils.InitRedis()
 
 	utils.InitDBX()
+	utils.InitGorm()  // 必须调用这个
+
 	// auth.InitDB(utils.DB) // 初始化认证模块
 
 	// 启动所有任务

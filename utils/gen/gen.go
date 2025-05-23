@@ -79,4 +79,33 @@ func main() {
             log.Println("✅ 模型生成成功")
         }
     }
+    if cmdMap['s'] {
+        err := genlib.GenerateServiceFromTable(tableName)
+        if err != nil {
+            log.Fatalf("生成服务失败: %v", err)
+        } else {
+            log.Println("✅ 服务生成成功")
+        }
+
+        if err := genlib.GenerateServiceSkeleton(tableName); err != nil {
+            log.Fatalf("生成服务骨架失败: %v", err)
+        } else {
+            log.Println("✅ 服务骨架生成成功")
+        }
+    }
+    if cmdMap['b'] {
+        err := genlib.GenerateBiz(tableName)
+        if err != nil {
+            log.Fatalf("生成业务层失败: %v", err)
+        } else {
+            log.Println("✅ 业务层生成成功")
+        }
+
+        err = genlib.GenerateBizSkeleton(tableName)
+        if err != nil {
+            log.Fatalf("生成业务骨架失败: %v", err)
+        } else {
+            log.Println("✅ 业务骨架生成成功")
+        }
+    }
 }

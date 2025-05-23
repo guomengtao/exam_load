@@ -6,12 +6,10 @@ import (
 	"gin-go-test/auth" // 新增认证模块
 	"gin-go-test/app/controllers" // 修改为你的实际模块路径
 	"gin-go-test/utils"
- 
- )
+)
 
 func SetupRoutes(router *gin.Engine) {
 
-	// 手动调用生成器的注册入口
 	RegisterGeneratedRoutes(router)
 
 	// 公共路由（无需认证）
