@@ -1,1 +1,1 @@
-tree -a -I 'node_modules|.*|abc' > TREE.md
+tree -a -I 'vendor|static|node_modules|.*|abc' > TREE.md

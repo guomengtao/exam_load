@@ -6,12 +6,14 @@ import (
 	"os"
 	"path/filepath"
 	"text/template"
-)
+ )
 
 type BizData struct {
 	ModelName string
 	TableName string
 	Package   string
+	BizName   string
+	Imports   string
 }
 
 func GenerateBiz(table string) error {
@@ -20,6 +22,8 @@ func GenerateBiz(table string) error {
 		ModelName: modelName,
 		TableName: table,
 		Package:   "biz",
+		BizName:   modelName + "Biz",
+		Imports:   "\"gin-go-test/app/models\"",
 	}
 
 	bizTplPath := filepath.Join("utils", "gen", "templates", "biz.tpl")
@@ -56,6 +60,7 @@ func GenerateBiz(table string) error {
 		log.Printf("Failed to execute biz template: %v", err)
 		return err
 	}
+
 
 	var bizSkeletonBuf bytes.Buffer
 	if err := bizSkeletonTpl.Execute(&bizSkeletonBuf, data); err != nil {
@@ -102,6 +107,8 @@ func GenerateBizSkeleton(table string) error {
 		ModelName: modelName,
 		TableName: table,
 		Package:   "biz",
+		BizName:   modelName + "Biz",
+		Imports:   "\"gin-go-test/app/models\"",
 	}
 
 	bizSkeletonTplPath := filepath.Join("utils", "gen", "templates", "biz_skeleton.tpl")

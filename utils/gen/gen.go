@@ -33,6 +33,46 @@ func main() {
     }
     tableName := *table
 
+    if *cmd == "delete" {
+        files := []string{
+            fmt.Sprintf("app/controllers/%s_controller.go", tableName),
+            fmt.Sprintf("utils/generated/controller/%s_skeleton.go", tableName),
+            fmt.Sprintf("app/models/%s.go", tableName),
+            fmt.Sprintf("app/services/%s_service.go", tableName),
+            fmt.Sprintf("utils/generated/service/%s_service_skeleton.go", tableName),
+            fmt.Sprintf("app/biz/%s_biz.go", tableName),
+            fmt.Sprintf("utils/generated/biz/%s_biz_skeleton.go", tableName),
+        }
+
+        fmt.Printf("🗑️ 即将删除与表 [%s] 相关的生成文件:\n", tableName)
+        for _, file := range files {
+            fmt.Printf("  - %s\n", file)
+        }
+        fmt.Print("❗ 请确认是否删除上述文件？(y/N): ")
+        var input string
+        fmt.Scanln(&input)
+        input = strings.TrimSpace(strings.ToLower(input))
+        if input != "y" {
+            fmt.Println("⚠️ 已取消删除操作")
+            return
+        }
+
+        fmt.Printf("🗑️ 开始删除与表 [%s] 相关的生成文件...\n", tableName)
+        for _, file := range files {
+            if err := os.Remove(file); err != nil {
+                if os.IsNotExist(err) {
+                    fmt.Printf("⚠️ 文件不存在，跳过: %s\n", file)
+                } else {
+                    fmt.Printf("❌ 删除失败: %s, 错误: %v\n", file, err)
+                }
+            } else {
+                fmt.Printf("✅ 已删除: %s\n", file)
+            }
+        }
+        fmt.Println("✅ 删除操作完成。")
+        return
+    }
+
     // 支持组合命令
     cmdMap := make(map[rune]bool)
     for _, ch := range *cmd {
