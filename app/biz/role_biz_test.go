@@ -7,7 +7,7 @@ import (
 	"gin-go-test/utils"
 )
 
-func TestRoleBiz_GetCount(t *testing.T) {
+func setupRoleBiz() *RoleBiz {
 	// 初始化 GORM 数据库连接
 	utils.InitGorm()
 
@@ -15,7 +15,11 @@ func TestRoleBiz_GetCount(t *testing.T) {
 	service := services.NewRoleService(utils.GormDB)
 
 	// 创建 RoleBiz 实例
-	biz := NewRoleBiz(service)
+	return NewRoleBiz(service)
+}
+
+func TestRoleBiz_GetCount(t *testing.T) {
+	biz := setupRoleBiz()
 
 	// 调用 GetCount 方法
 	count, err := biz.GetCount()
@@ -27,14 +31,7 @@ func TestRoleBiz_GetCount(t *testing.T) {
 }
 
 func TestRoleBiz_List(t *testing.T) {
-	// 初始化 GORM 数据库连接
-	utils.InitGorm()
-
-	// 创建 RoleService 实例
-	service := services.NewRoleService(utils.GormDB)
-
-	// 创建 RoleBiz 实例
-	biz := NewRoleBiz(service)
+	biz := setupRoleBiz()
 
 	// 调用 List 方法，分页参数：第 1 页，每页 10 条
 	items, total, err := biz.List(1, 10)

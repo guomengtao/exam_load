@@ -3,7 +3,6 @@ package biz
 import (
 	"gin-go-test/app/services"
 	"gin-go-test/utils/generated/biz"
-	"gin-go-test/app/models"
 	"fmt"
 )
 
@@ -17,7 +16,7 @@ type {{ .ModelName }}Biz struct {
 func New{{ .ModelName }}Biz(service *services.{{ .ModelName }}Service) *{{ .ModelName }}Biz {
 	return &{{ .ModelName }}Biz{
 		service:  service,
-		skeleton: biz.New{{ .ModelName }}BizSkeleton(service.GetDB()),
+		skeleton: biz.New{{ .ModelName }}BizSkeleton(service),
 	}
 }
 
@@ -30,6 +29,9 @@ func (b *{{ .ModelName }}Biz) GetCount() (int64, error) {
 }
 
 // List 获取分页数据，调用骨架层实现
-func (b *{{ .ModelName }}Biz) List(page int, pageSize int) ([]models.{{ .ModelName }}, int64, error) {
-    return b.skeleton.List(page, pageSize)
+func (b *{{ .ModelName }}Biz) List(page int, pageSize int) ([]interface{}, int64, error) {
+	if b.skeleton == nil {
+		return nil, 0, fmt.Errorf("skeleton is nil")
+	}
+	return b.skeleton.List(page, pageSize)
 }

@@ -7,6 +7,7 @@ import (
 	"gin-go-test/app/biz"
 	"gin-go-test/app/services"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 // {{.ControllerName}}Controller 控制器示例
@@ -27,6 +28,8 @@ func Register{{.ControllerName}}Routes(router *gin.Engine, db *gorm.DB) {
 
 	group.GET("/hello", ctrl.HelloHandler)
 	group.GET("/count", ctrl.CountHandler)
+	group.GET("/list", ctrl.ListHandler)
+	// 这里以后根据需要添加接口，比如分页列表，增删改查等
 }
 
 // HelloHandler 示例接口，调用骨架层对应方法
@@ -37,7 +40,39 @@ func (ctrl *{{.ControllerName}}Controller) HelloHandler(c *gin.Context) {
 	})
 }
 
-// CountHandler 查询真实总数，调用 Biz 层
+// CountHandler 查询真实总数，调用骨架层方法
 func (ctrl *{{.ControllerName}}Controller) CountHandler(c *gin.Context) {
-	ctrl.skeleton.CountHandler(c)
+	count, err := ctrl.skeleton.GetCount()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"count": count})
+}
+
+// ListHandler 分页列表接口，调用骨架层 List 方法
+func (ctrl *{{.ControllerName}}Controller) ListHandler(c *gin.Context) {
+	page := 1
+	pageSize := 10
+	if p := c.Query("page"); p != "" {
+		if v, err := strconv.Atoi(p); err == nil && v > 0 {
+			page = v
+		}
+	}
+	if ps := c.Query("pageSize"); ps != "" {
+		if v, err := strconv.Atoi(ps); err == nil && v > 0 {
+			pageSize = v
+		}
+	}
+	list, total, err := ctrl.skeleton.List(page, pageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"list":  list,
+		"total": total,
+		"page":  page,
+		"pageSize": pageSize,
+	})
 }

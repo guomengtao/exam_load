@@ -1,3 +1,4 @@
+符合 Clean Architecture 的架构理念。
 gin-go-test/
 ├── app/
 │   ├── controllers/

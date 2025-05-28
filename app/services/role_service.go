@@ -1,8 +1,8 @@
 package services
 
 import (
-	"gin-go-test/app/models"
-	"gin-go-test/utils/generated/service"
+	"fmt"
+ 	"gin-go-test/utils/generated/service"
 
 	"gorm.io/gorm"
 )
@@ -14,15 +14,23 @@ type RoleService struct {
 
 func NewRoleService(db *gorm.DB) *RoleService {
 	return &RoleService{
-		skeleton: &service.RoleServiceSkeleton{},
+		skeleton: service.NewRoleServiceSkeleton(db),
 		db:       db,
 	}
 }
 
 func (s *RoleService) GetCount() (int64, error) {
-	var count int64
-	err := s.db.Model(&models.Role{}).Count(&count).Error
-	return count, err
+	if s.skeleton == nil {
+		return 0, fmt.Errorf("skeleton is nil")
+	}
+	return s.skeleton.GetCount()
+}
+
+func (s *RoleService) List(page int, pageSize int) (interface{}, int64, error) {
+	if s.skeleton == nil {
+		return nil, 0, fmt.Errorf("skeleton is nil")
+	}
+	return s.skeleton.List(page, pageSize)
 }
 
 func (s *RoleService) GetDB() *gorm.DB {

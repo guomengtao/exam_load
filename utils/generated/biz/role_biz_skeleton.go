@@ -1,46 +1,38 @@
 package biz
 
 import (
-	"gorm.io/gorm"
-	"gin-go-test/app/models"
+	"fmt"
+	"gin-go-test/app/services"
 )
 
 type RoleBizSkeleton struct {
-	db *gorm.DB
+	service *services.RoleService
 }
 
-// NewRoleBizSkeleton 构造函数
-func NewRoleBizSkeleton(db *gorm.DB) *RoleBizSkeleton {
-	return &RoleBizSkeleton{db: db}
+func NewRoleBizSkeleton(service *services.RoleService) *RoleBizSkeleton {
+	return &RoleBizSkeleton{service: service}
 }
 
-// SayHello 示例骨架方法
-func (s *RoleBizSkeleton) SayHello() string {
-	return "hello from RoleBizSkeleton"
+// GetCount 示例方法：调用 Server 层获取总数
+func (b *RoleBizSkeleton) GetCount() (int64, error) {
+	if b.service == nil {
+		return 0, fmt.Errorf("service is nil")
+	}
+	return b.service.GetCount()
 }
 
-// GetCount 真实统计表记录数
-func (s *RoleBizSkeleton) GetCount() (int64, error) {
-	var count int64
-	err := s.db.Model(&models.Role{}).Count(&count).Error
-	return count, err
-}
-
-// List 获取分页数据
-func (s *RoleBizSkeleton) List(page int, pageSize int) ([]models.Role, int64, error) {
-	var items []models.Role
-	var total int64
-
-	offset := (page - 1) * pageSize
-	err := s.db.Model(&models.Role{}).
-		Count(&total).
-		Limit(pageSize).
-		Offset(offset).
-		Find(&items).Error
-
+// List 示例方法：调用 Server 层获取分页数据
+func (b *RoleBizSkeleton) List(page int, pageSize int) ([]interface{}, int64, error) {
+	if b.service == nil {
+		return nil, 0, fmt.Errorf("service is nil")
+	}
+	data, total, err := b.service.List(page, pageSize)
 	if err != nil {
 		return nil, 0, err
 	}
-
-	return items, total, nil
+	list, ok := data.([]interface{})
+	if !ok {
+		return nil, 0, fmt.Errorf("invalid data type returned from service.List")
+	}
+	return list, total, nil
 }

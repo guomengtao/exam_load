@@ -8,17 +8,25 @@ import (
  	"text/template"
 )
 
+// ServiceTemplateData holds data passed to the service templates.
+// ServiceName is the CamelCase version of the table name used for service naming.
+// ModelName is the CamelCase version of the table name used for model struct naming.
 type ServiceTemplateData struct {
 	ServiceName string
+	ModelName   string
 }
 
  
 
+// GenerateServiceFromTable generates a service file from a table name.
+// It converts tableName to CamelCase for both ServiceName and ModelName.
 func GenerateServiceFromTable(tableName string) error {
 	serviceName := toCamelCase(tableName)
+	modelName := toCamelCase(tableName)
 
 	data := ServiceTemplateData{
 		ServiceName: serviceName,
+		ModelName:   modelName,
 	}
 
 	tmpl, err := template.ParseFiles("utils/gen/templates/service.tpl")
@@ -45,11 +53,15 @@ func GenerateServiceFromTable(tableName string) error {
 	return nil
 }
 
+// GenerateServiceSkeleton generates a service skeleton file from a table name.
+// It converts tableName to CamelCase for both ServiceName and ModelName.
 func GenerateServiceSkeleton(tableName string) error {
 	serviceName := toCamelCase(tableName)
+	modelName := toCamelCase(tableName)
 
 	data := ServiceTemplateData{
 		ServiceName: serviceName,
+		ModelName:   modelName,
 	}
 
 	tmpl, err := template.ParseFiles("utils/gen/templates/service_skeleton.tpl")

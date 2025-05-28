@@ -83,15 +83,18 @@ func main() {
     if cmdMap['a'] {
         cmdMap['c'] = true
         cmdMap['r'] = true
-        cmdMap['k'] = true
         cmdMap['m'] = true
         cmdMap['s'] = true
         cmdMap['b'] = true
     }
 
     if cmdMap['c'] {
-        if err := genlib.GenerateControllerWithAppend (tableName, moduleName); err != nil {
+        if err := genlib.GenerateControllerWithAppend(tableName, moduleName); err != nil {
             log.Fatalf("GenerateControllerWithAppend  error: %v", err)
+        }
+        // 新增：生成控制器骨架
+        if err := genlib.GenerateSkeletonWithAppend(tableName, moduleName, true); err != nil {
+            log.Println("❌ 生成控制器骨架失败:", err)
         }
         fmt.Println("✅ 控制器生成成功")
         fmt.Printf("📁 生成文件路径: app/controllers/%s_controller.go\n", tableName)
@@ -108,12 +111,7 @@ func main() {
         }
     }
 
-    if cmdMap['k'] {
-        overwrite := true // 可根据实际需要设为 false
-        if err := genlib.GenerateSkeletonWithAppend(tableName, moduleName, overwrite); err != nil {
-            log.Println("❌ 生成骨架失败:", err)
-        }
-    }
+    // 已删除 cmdMap['k'] 处理代码块
     if cmdMap['m'] {
         err := genlib.GenerateModelFromTable(tableName)
         if err != nil {
@@ -137,14 +135,14 @@ func main() {
         }
     }
     if cmdMap['b'] {
-        err := genlib.GenerateBiz(tableName)
+        err := genlib.GenerateBiz(tableName, true)
         if err != nil {
             log.Fatalf("生成业务层失败: %v", err)
         } else {
             log.Println("✅ 业务层生成成功")
         }
 
-        err = genlib.GenerateBizSkeleton(tableName)
+        err = genlib.GenerateBizSkeleton(tableName, true)
         if err != nil {
             log.Fatalf("生成业务骨架失败: %v", err)
         } else {

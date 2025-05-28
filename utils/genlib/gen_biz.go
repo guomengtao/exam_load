@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"text/template"
- )
+)
 
 type BizData struct {
 	ModelName string
@@ -14,9 +14,10 @@ type BizData struct {
 	Package   string
 	BizName   string
 	Imports   string
+	HasList   bool
 }
 
-func GenerateBiz(table string) error {
+func GenerateBiz(table string, hasList bool) error {
 	modelName := toCamelCase(table)
 	data := BizData{
 		ModelName: modelName,
@@ -24,6 +25,7 @@ func GenerateBiz(table string) error {
 		Package:   "biz",
 		BizName:   modelName + "Biz",
 		Imports:   "\"gin-go-test/app/models\"",
+		HasList:   hasList,
 	}
 
 	bizTplPath := filepath.Join("utils", "gen", "templates", "biz.tpl")
@@ -61,7 +63,6 @@ func GenerateBiz(table string) error {
 		return err
 	}
 
-
 	var bizSkeletonBuf bytes.Buffer
 	if err := bizSkeletonTpl.Execute(&bizSkeletonBuf, data); err != nil {
 		log.Printf("Failed to execute biz skeleton template: %v", err)
@@ -83,6 +84,10 @@ func GenerateBiz(table string) error {
 	return nil
 }
 
+func GenerateBizSimple(table string) error {
+	return GenerateBiz(table, false)
+}
+
 func toCamelCase(s string) string {
 	b := make([]byte, 0, len(s))
 	upperNext := true
@@ -101,7 +106,7 @@ func toCamelCase(s string) string {
 	return string(b)
 }
 
-func GenerateBizSkeleton(table string) error {
+func GenerateBizSkeleton(table string, hasList bool) error {
 	modelName := toCamelCase(table)
 	data := BizData{
 		ModelName: modelName,
@@ -109,6 +114,7 @@ func GenerateBizSkeleton(table string) error {
 		Package:   "biz",
 		BizName:   modelName + "Biz",
 		Imports:   "\"gin-go-test/app/models\"",
+		HasList:   hasList,
 	}
 
 	bizSkeletonTplPath := filepath.Join("utils", "gen", "templates", "biz_skeleton.tpl")

@@ -1,36 +1,57 @@
 package services
 
 import (
-	"os"
-	"strconv"
 	"testing"
 
- )
+	"gin-go-test/app/models"
+	"gin-go-test/utils/generated/service"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+)
 
- 
-
-func TestGetRolesPaginated(t *testing.T) {
-	// 从环境变量读取 page 和 pageSize，默认 page=1, pageSize=10
-	page := getEnvAsInt("TEST_PAGE", 1)
-	pageSize := getEnvAsInt("TEST_PAGE_SIZE", 10)
-
-	result, err := GetRolesPaginated(page, pageSize)
+func setupTestDB(t *testing.T) *gorm.DB {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	if err != nil {
-		t.Fatalf("获取角色分页失败: %v", err)
+		t.Fatalf("无法连接测试数据库: %v", err)
 	}
 
-	t.Logf("✅ 获取到 %d 个角色（共 %d 条） - 当前页: %d", len(result.List), result.Total, page)
+	err = db.AutoMigrate(&models.Role{})
+	if err != nil {
+		t.Fatalf("自动迁移失败: %v", err)
+	}
+
+	// 插入模拟数据
+	db.Create(&models.Role{Name: "管理员", Desc: "系统管理员"})
+	db.Create(&models.Role{Name: "用户", Desc: "普通用户"})
+
+	return db
 }
 
-// 工具函数：读取环境变量并转换为 int
-func getEnvAsInt(key string, defaultVal int) int {
-	valStr := os.Getenv(key)
-	if valStr == "" {
-		return defaultVal
-	}
-	val, err := strconv.Atoi(valStr)
+func TestRoleServiceSkeleton_GetCount(t *testing.T) {
+	db := setupTestDB(t)
+	skeleton := service.NewRoleServiceSkeleton(db)
+
+	count, err := skeleton.GetCount()
 	if err != nil {
-		return defaultVal
+		t.Errorf("获取总数失败: %v", err)
 	}
-	return val
+	if count != 2 {
+		t.Errorf("期望总数为 2，实际为 %d", count)
+	}
+}
+
+func TestRoleServiceSkeleton_List(t *testing.T) {
+	db := setupTestDB(t)
+	skeleton := service.NewRoleServiceSkeleton(db)
+
+	items, total, err := skeleton.List(1, 10)
+	if err != nil {
+		t.Errorf("分页查询失败: %v", err)
+	}
+	if total != 2 {
+		t.Errorf("期望总数为 2，实际为 %d", total)
+	}
+	if len(items) != 2 {
+		t.Errorf("期望返回 2 条数据，实际为 %d", len(items))
+	}
 }

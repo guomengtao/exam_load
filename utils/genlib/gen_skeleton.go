@@ -9,7 +9,7 @@ import (
 
 // GenerateControllerWithAppend 路由追加版
 func GenerateSkeletonWithAppend(tableName, moduleName string, overwrite bool) error {
-	tmplPath := "utils/gen/templates/skeleton.tpl"
+	tmplPath := "utils/gen/templates/controller_skeleton.tpl"
 	// Ensure directory exists
 	if err := os.MkdirAll("utils/generated/controller", os.ModePerm); err != nil {
 		return fmt.Errorf("创建目录失败: %v", err)
