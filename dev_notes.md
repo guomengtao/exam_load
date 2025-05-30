@@ -90,6 +90,11 @@
     - 禁止因调试或测试而修改、增加任何其他文件。
     - 所有调试和测试必须严格在允许的模板文件范围内进行。
 
+7. **生成文件请勿直接修改**
+    - 生成的文件（如 controller、service、biz、model、validator 等）请勿直接修改。
+    - 因为每次重新生成都会被覆盖，所有修改应通过模板文件实现。
+    - 仅允许在临时调试或测试时短暂修改，正式代码请回归模板。
+
 ## 开发总目标
 
 - 实现批量创建 API（支持事务、部分成功、最多 30 条记录、简单验证）
@@ -130,10 +135,22 @@
   - 计数：`GET /api/role/count`
   - 列表：`GET /api/role/list`
 - 新增接口：
-  - 批量创建：`POST /api/role/role`
-  - 批量更新：`PUT /api/role/role`
-  - 删除：`DELETE /api/role/role/:id`
+  - 批量创建：`POST /api/role`
+  - 批量更新：`PUT /api/role`
+  - 删除：`DELETE /api/role`（支持批量删除，body 传 ids）
   - 查询（带搜索）：`GET /api/role/list?keyword=xxx&page=1&pageSize=10`
+
+  查询（带搜索）路由参数示例：
+  ```
+  示例：
+  GET /api/role/list?page=1&pageSize=10&amp;search[name]=admin&amp;filters[status]=active&amp;sort[created_at]=desc
+  支持参数：
+  - page / pageSize：分页
+  - search[field]=value：模糊搜索
+  - filters[field]=value：精确过滤
+  - sort[field]=asc|desc：排序
+  - select[]=字段名：指定返回字段
+  ```
 
 ## 生成器执行命令
 
@@ -143,6 +160,7 @@
 ```bash
 go run utils/gen/gen.go -table=role
 ```
+> 注：表名通过命令行传入，其它参数自动推导。
 
 ## 最小第一步目标
 
@@ -153,6 +171,89 @@ go run utils/gen/gen.go -table=role
 - 创建 validator.tpl 和 validator.go 模板，实现基础验证逻辑
 - 创建单元测试文件 `app/controllers/{{.VarName}}_controller_test.go`，验证最小目标功能
 
+
+## 错误处理注意事项
+
+- 在返回 JSON 时，不要直接返回 []error 类型，应将其转换为 []map[string]interface{} 或 []string，否则 JSON 编码会失败，返回 [{}]。
+- 示例：在 BatchCreateHandler 中，将 errors 转换为 errorMessages，确保返回格式正确。
+
+### RESTful 格式统一返回函数（建议使用）
+
+项目统一使用 `utils/response.go` 中定义的 `Success`、`Error` 等函数来构建响应数据结构。
+
+- 使用方法：
+  - 成功响应：`return utils.Success(c, data)`
+  - 错误响应：`return utils.Error(c, "错误信息")`
+  - 分页响应：`return utils.PageSuccess(c, list, total)`
+
+- 要求：
+  - 所有 Controller 层应优先使用这些函数封装输出。
+  - Service 层或 Biz 层若需向 Controller 报错，应返回标准 error 或 error 数组，由 Controller 再格式化。
+  - 所有生成模板中应使用统一的 `utils.Success` / `utils.Error`。
+
 ---
 
 **本文档是开发规则和协作的唯一参考依据。** 
+
+## 生成器可升级性设计原则（Generator Upgradeability）
+
+为了确保代码生成器在后期迭代中仍然具备可维护性和可升级性，避免因为早期设计缺陷导致大量已生成代码无法更新，特制定如下设计原则：
+
+### 🧱 各类骨架层职责说明与限制
+
+| 骨架层文件名 | 允许行为 | 禁止行为 | 说明 |
+|--------------|----------|-----------|------|
+| controller_skeleton.go | ✅ 封装 RESTful 错误格式、参数处理通用函数 | ❌ 写死具体表名或业务逻辑 | 适合统一格式封装逻辑，如错误返回、参数提取 |
+| biz_skeleton.go | ✅ 编排 service 调用、轻量业务判断模板 | ❌ 写死字段判断（如 if item.Type == "X"） | 负责构建业务处理框架，保持中性和通用 |
+| service_skeleton.go | ✅ 提供数据库字段遍历、数据映射框架 | ❌ 封装响应格式 ❌ 写事务处理 ❌ 写逻辑分支 | 仅负责数据读写框架，不介入业务流程 |
+
+### ✅ 核心原则：生成文件应与生成器逻辑解耦
+- 所有生成的代码文件（如 controller、service、biz、skeleton 等）在结构上应**独立完整**，不应依赖生成器中额外的函数或工具。
+- 避免生成的文件中引入 generator 内部专用函数（如 camelCase、snakeCase 等工具函数），应在生成前处理好并写入最终代码。
+
+### 📦 公共函数使用限制
+公共函数按照作用域分为两类：
+
+#### 1. 生成器专用函数（如命名转换函数）
+- 示例：`camelCase`, `snakeCase` 等仅服务于模板渲染的函数。
+- 使用策略：仅允许在生成过程调用（如模板执行），不允许生成后的代码中引用。
+
+#### 2. 业务通用函数（如日志、数据库、配置工具）
+- 示例：`logger.Infof`、`db.Conn()`、`config.Get()` 等属于业务通用范围。
+- 使用策略：可在所有生成的文件中使用，并在项目全局维护。
+
+
+### 🚫 避免的问题
+- ❌ 生成文件引用生成器内未导出的 helper 工具包。
+- ❌ 生成器变动导致历史生成文件报错（如函数消失、命名方式改变）。
+- ❌ 骨架层中包含业务判断、事务控制、错误格式化等逻辑。
+
+### ❗ 骨架层与业务/服务职责边界补充
+
+为确保职责清晰与文件可独立维护，必须遵守以下规则：
+
+#### 骨架层（Skeleton）中不允许的内容：
+- ❌ 不允许编写任何业务判断逻辑（如 if item.Type == "x"）。
+- ❌ 不允许写事务控制逻辑（如 tx.Begin()、tx.Commit()）。
+- ❌ 不允许引入外部 helper 或 toolkit（如 custom error 处理）。
+- ✅ 仅允许提供基础的结构性代码（如接口函数的空实现、字段遍历框架）。
+
+#### 服务层（Service）中不允许的内容：
+- ❌ 不允许与具体数据库事务深度绑定逻辑（应下沉到 skeleton 或 data 层）。
+- ❌ 不允许处理通用格式化输出逻辑（如 RESTful 错误结构）。
+- ❌ 不允许写入复杂 if-else 分支业务流，避免与 biz 层职责冲突。
+- ✅ 应专注于数据交互、输入输出结构组织、验证调度等。
+
+#### 业务层（Biz）中不允许的内容：
+- ❌ 不允许直接操作数据库或事务（应通过 service 调用实现）。
+- ❌ 不允许直接引用 controller 或 route 相关逻辑。
+- ✅ 专注于业务规则实现、调用 service 完成复合逻辑。
+
+**备注：如确需跨层调用逻辑，需在文档中说明并由负责人批准。**
+
+### 🔄 升级策略建议
+- 若生成器模板升级，需要明确影响范围，优先做到向后兼容。
+- 已生成文件应提供可选“仅重建骨架层”的升级模式，保留业务层定制代码。
+- 模板应避免重复生成 service/controller，改为手动引导开发者引用新的骨架接口。
+
+该原则保障生成器可持续演进，避免成为“死神工具”，提升工程健壮性与长远维护能力。

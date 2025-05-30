@@ -4,8 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/golang-jwt/jwt/v5"
 	"strings"
+)
+
+// JWT相关错误
+var (
+	ErrInvalidToken = errors.New("invalid token")
+	ErrInvalidPassword = errors.New("invalid password")
 )
 
 // GetJWTInfo decodes a raw JWT string and returns its claims
@@ -46,4 +52,24 @@ func ExtractToken(authHeader string) string {
 		return strings.TrimPrefix(authHeader, "Bearer ")
 	}
 	return authHeader
+}
+
+// ParseJWT 解析JWT token
+func ParseJWT(tokenString string) (jwt.MapClaims, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, ErrInvalidToken
+		}
+		return []byte("your-secret-key"), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims, nil
+	}
+
+	return nil, ErrInvalidToken
 }

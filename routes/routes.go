@@ -4,14 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"gin-go-test/handlers"
 	"gin-go-test/auth" // 新增认证模块
-	"gin-go-test/app/controllers" // 修改为你的实际模块路径
 	"gin-go-test/utils"
 )
 
 func SetupRoutes(router *gin.Engine) {
-
-	
-
 	// 公共路由（无需认证）
 	public := router.Group("/api")
 	{
@@ -37,21 +33,14 @@ func SetupRoutes(router *gin.Engine) {
 
 		public.GET("user/answer/:record_id/full", handlers.GetFullAnswerResult)
 
-
 		// 临时开放 
-		public.GET("/admins", controllers.GetAdminsHandler)
-		public.PUT("/admin/password", controllers.UpdateOwnPassword)
- 		public.GET("/status", controllers.StatusHandler)
-		public.POST("/task/control", controllers.TaskControlHandler)
-		public.GET("/export_answers", controllers.ExportAnswersHandler)
-		public.POST("/import_students", controllers.ImportStudentsHandler)
+		// TODO: 这些处理函数需要实现
+		// public.GET("/status", handlers.StatusHandler)
+		// public.POST("/task/control", handlers.TaskControlHandler)
+		// public.GET("/export_answers", handlers.ExportAnswersHandler)
+		// public.POST("/import_students", handlers.ImportStudentsHandler)
 		
-
-
-		public.GET("/roles", controllers.GetRolesHandler)
-
-
-		
+		// public.GET("/roles", controllers.GetRolesHandler)
 	}
 
 	// 需要认证的API组

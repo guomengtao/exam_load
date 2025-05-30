@@ -6,9 +6,13 @@ import (
     "log"
     "os"
     "strings"
-
+    "text/template"
+ 
     "github.com/joho/godotenv"
     "gin-go-test/utils/genlib"
+    "gin-go-test/utils/gen/meta"
+    "database/sql"
+    _ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
@@ -32,6 +36,12 @@ func main() {
         log.Fatal("❌ 请使用 -table 参数指定表名，例如: -table=member")
     }
     tableName := *table
+
+    // tablePrefix := os.Getenv("TABLE_PREFIX")
+    // fullTableName  := tableName
+    // if tablePrefix != "" {
+    //     fullTableName = tablePrefix + tableName
+    // }
 
     if *cmd == "delete" {
         files := []string{
@@ -89,11 +99,32 @@ func main() {
     }
 
     if cmdMap['c'] {
+        // 连接数据库，参数从环境变量读取
+        mysqlUser := os.Getenv("MYSQL_USER")
+        mysqlPassword := os.Getenv("MYSQL_PASSWORD")
+        mysqlHost := os.Getenv("MYSQL_HOST")
+        mysqlPort := os.Getenv("MYSQL_PORT")
+        mysqlDB := os.Getenv("MYSQL_DB")
+        if mysqlUser == "" { mysqlUser = "root" }
+        if mysqlPassword == "" { mysqlPassword = "123456" }
+        if mysqlHost == "" { mysqlHost = "127.0.0.1" }
+        if mysqlPort == "" { mysqlPort = "3306" }
+        if mysqlDB == "" { mysqlDB = "gin_go_test" }
+
+        dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+            mysqlUser, mysqlPassword, mysqlHost, mysqlPort, mysqlDB)
+
+        db, err := sql.Open("mysql", dsn)
+        if err != nil {
+            log.Fatalf("连接数据库失败: %v", err)
+        }
+        defer db.Close()
+
         if err := genlib.GenerateControllerWithAppend(tableName, moduleName); err != nil {
             log.Fatalf("GenerateControllerWithAppend  error: %v", err)
         }
         // 新增：生成控制器骨架
-        if err := genlib.GenerateSkeletonWithAppend(tableName, moduleName, true); err != nil {
+        if err := genlib.GenerateControllerSkeleton(db, tableName, moduleName, true); err != nil {
             log.Println("❌ 生成控制器骨架失败:", err)
         }
         fmt.Println("✅ 控制器生成成功")
@@ -128,10 +159,39 @@ func main() {
             log.Println("✅ 服务生成成功")
         }
 
-        if err := genlib.GenerateServiceSkeleton(tableName); err != nil {
+        // 连接数据库，参数从环境变量读取
+        mysqlUser := os.Getenv("MYSQL_USER")
+        mysqlPassword := os.Getenv("MYSQL_PASSWORD")
+        mysqlHost := os.Getenv("MYSQL_HOST")
+        mysqlPort := os.Getenv("MYSQL_PORT")
+        mysqlDB := os.Getenv("MYSQL_DB")
+        if mysqlUser == "" { mysqlUser = "root" }
+        if mysqlPassword == "" { mysqlPassword = "123456" }
+        if mysqlHost == "" { mysqlHost = "127.0.0.1" }
+        if mysqlPort == "" { mysqlPort = "3306" }
+        if mysqlDB == "" { mysqlDB = "gin_go_test" }
+
+        dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+            mysqlUser, mysqlPassword, mysqlHost, mysqlPort, mysqlDB)
+
+        db, err := sql.Open("mysql", dsn)
+        if err != nil {
+            log.Fatalf("连接数据库失败: %v", err)
+        }
+        defer db.Close()
+
+        // 构建模板引擎，注册 camelCase 函数
+        tmpl := template.New("service_skeleton.tpl").Funcs(template.FuncMap{
+            "camelCase": meta.CamelCase,
+        })
+
+        tmpl, err = tmpl.ParseFiles("utils/gen/templates/service_skeleton.tpl")
+        if err != nil {
+            log.Fatalf("生成服务骨架失败: 加载骨架模板失败: %v", err)
+        }
+
+        if err := genlib.GenerateServiceSkeleton(db, tableName, tmpl); err != nil {
             log.Fatalf("生成服务骨架失败: %v", err)
-        } else {
-            log.Println("✅ 服务骨架生成成功")
         }
     }
     if cmdMap['b'] {

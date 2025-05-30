@@ -12,8 +12,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func TestGetAllAdmins(t *testing.T) {
-	admins, err := GetAllAdmins()
+func TestAdminService_List(t *testing.T) {
+	service := NewAdminService(utils.GormDB)
+	admins, err := service.List(1, 10)
 	if err != nil {
 		t.Fatalf("获取管理员失败: %v", err)
 	}
@@ -23,11 +24,7 @@ func TestGetAllAdmins(t *testing.T) {
 	t.Logf("获取成功，返回 %d 条记录", len(admins))
 }
 
- 
-
- 
-
-func TestUpdateAdminPassword(t *testing.T) {
+func TestAdminService_UpdatePassword(t *testing.T) {
 	utils.InitDBX()
 
 	adminID := os.Getenv("TEST_ADMIN_ID")
@@ -53,7 +50,7 @@ func TestUpdateAdminPassword(t *testing.T) {
 	// 打印信息
 	fmt.Println("🧩 原始旧密码（明文）: 无法还原（bcrypt 不可逆）")
 	fmt.Println("🔐 原始旧密码（加密）:", oldEncryptedPassword)
-	fmt.Println("🆕 新密码（明文）:", newPlainPassword)
+	fmt.Println("🆕 新密码测试输出（Hello World 123）:", newPlainPassword)
 	fmt.Println("🔐 新密码（加密）:", string(newEncryptedPassword))
 
 	// 更新数据库密码
@@ -80,20 +77,4 @@ func TestGetJWTInfo(t *testing.T) {
 	for k, v := range claims {
 		fmt.Printf("  %s: %v\n", k, v)
 	}
-}
-
-func TestUpdateOwnPassword(t *testing.T) {
-	token := os.Getenv("TEST_JWT_TOKEN")
-	if token == "" {
-		t.Fatal("❌ TEST_JWT_TOKEN not set")
-	}
-
-	newPassword := "newStrongPass123454"
-
-	err := UpdateOwnPassword(newPassword, token)
-	if err != nil {
-		t.Fatalf("❌ Password update failed: %v", err)
-	}
-
-	t.Log("✅ Password updated successfully.")
 }

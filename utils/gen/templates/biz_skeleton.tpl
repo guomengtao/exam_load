@@ -1,38 +1,59 @@
+// ⚠️ 本文件为骨架模板，禁止直接修改任何生成器生成的文件！
+// 如需调整，请修改本模板，并通过 go run utils/gen/gen.go -table=表名 -cmd=b 等命令重新生成覆盖。
+
 package biz
 
 import (
-	"fmt"
+	"gin-go-test/app/models"
 	"gin-go-test/app/services"
 )
 
-type {{ .ModelName }}BizSkeleton struct {
-	service *services.{{ .ModelName }}Service
+// {{.TableName}}Biz 处理{{.TableName}}相关的业务逻辑
+type {{.TableName}}Biz struct {
+	service *services.{{.ModelName}}Service
 }
 
-func New{{ .ModelName }}BizSkeleton(service *services.{{ .ModelName }}Service) *{{ .ModelName }}BizSkeleton {
-	return &{{ .ModelName }}BizSkeleton{service: service}
+// New{{.TableName}}Biz 创建新的{{.TableName}}Biz实例
+func New{{.TableName}}Biz(service *services.{{.ModelName}}Service) *{{.TableName}}Biz {
+	return &{{.TableName}}Biz{service: service}
 }
 
-// GetCount 示例方法：调用 Server 层获取总数
-func (b *{{ .ModelName }}BizSkeleton) GetCount() (int64, error) {
-	if b.service == nil {
-		return 0, fmt.Errorf("service is nil")
-	}
+// GetCount 获取记录总数
+func (b *{{.TableName}}Biz) GetCount() (int64, error) {
 	return b.service.GetCount()
 }
 
-// List 示例方法：调用 Server 层获取分页数据
-func (b *{{ .ModelName }}BizSkeleton) List(page int, pageSize int) ([]interface{}, int64, error) {
-	if b.service == nil {
-		return nil, 0, fmt.Errorf("service is nil")
+// List 获取记录列表
+func (b *{{.TableName}}Biz) List(page, pageSize int) ([]models.{{.ModelName}}, error) {
+	return b.service.List(page, pageSize)
+}
+
+// BatchCreate 批量创建记录
+func (b *{{.TableName}}Biz) BatchCreate(items []*models.{{.ModelName}}) ([]models.{{.ModelName}}, []error) {
+	// 将 []*models.{{.ModelName}} 转换为 []models.{{.ModelName}}
+	modelItems := make([]models.{{.ModelName}}, len(items))
+	for i, item := range items {
+		modelItems[i] = *item
 	}
-	data, total, err := b.service.List(page, pageSize)
-	if err != nil {
-		return nil, 0, err
+	return b.service.BatchCreate(modelItems)
+}
+
+// BatchUpdate 批量更新记录
+func (b *{{.TableName}}Biz) BatchUpdate(items []*models.{{.ModelName}}) error {
+	// 将 []*models.{{.ModelName}} 转换为 []models.{{.ModelName}}
+	modelItems := make([]models.{{.ModelName}}, len(items))
+	for i, item := range items {
+		modelItems[i] = *item
 	}
-	list, ok := data.([]interface{})
-	if !ok {
-		return nil, 0, fmt.Errorf("invalid data type returned from service.List")
+	return b.service.BatchUpdate(modelItems)
+}
+
+// BatchDelete 批量删除记录
+func (b *{{.TableName}}Biz) BatchDelete(ids []int) []error {
+	// 将 []int 转换为 []uint
+	uintIds := make([]uint, len(ids))
+	for i, id := range ids {
+		uintIds[i] = uint(id)
 	}
-	return list, total, nil
+	return b.service.BatchDelete(uintIds)
 }

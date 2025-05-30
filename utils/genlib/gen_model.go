@@ -11,10 +11,13 @@ import (
 )
 
 type Field struct {
-	Name   string
-	Type   string
-	Column string
-	JSON   string
+	Name            string
+	Type            string
+	Column          string
+	JSON            string
+	IsRequired      bool
+	IsPrimaryKey    bool
+	IsAutoIncrement bool
 }
 
 type ModelTemplateData struct {
@@ -25,6 +28,7 @@ type ModelTemplateData struct {
 
 var typeMap = map[string]string{
 	"int":       "int",
+	"mediumint": "int",
 	"bigint":    "int64",
 	"varchar":   "string",
 	"text":      "string",
@@ -32,8 +36,6 @@ var typeMap = map[string]string{
 	"timestamp": "time.Time",
 	"tinyint":   "bool",
 }
-
- 
 
 func mapType(sqlType string) string {
 	for key, goType := range typeMap {
@@ -44,7 +46,7 @@ func mapType(sqlType string) string {
 	return "string"
 }
 
-func fetchColumns(db *sql.DB, table string) ([]Field, error) {
+func FetchColumns(db *sql.DB, table string) ([]Field, error) {
 	rows, err := db.Query(fmt.Sprintf("SHOW COLUMNS FROM `%s`", table))
 	if err != nil {
 		return nil, err
@@ -59,10 +61,13 @@ func fetchColumns(db *sql.DB, table string) ([]Field, error) {
 			return nil, err
 		}
 		fields = append(fields, Field{
-			Name:   toCamelCase(field),
-			Type:   mapType(typ),
-			Column: field,
-			JSON:   field,
+			Name:            toCamelCase(field),
+			Type:            mapType(typ),
+			Column:          field,
+			JSON:            field,
+			IsRequired:      null == "NO",
+			IsPrimaryKey:    key == "PRI",
+			IsAutoIncrement: strings.Contains(extra, "auto_increment"),
 		})
 	}
 	return fields, nil
@@ -75,11 +80,15 @@ func GenerateModelFromTable(tableName string) error {
 	port := os.Getenv("MYSQL_PORT")
 	dbname := os.Getenv("MYSQL_DB")
 
+	tablePrefix := os.Getenv("TABLE_PREFIX")
+	fullTableName := tableName
+	if tablePrefix != "" {
+		fullTableName = tablePrefix + tableName
+	}
+
 	fmt.Printf("📡 已经连接数据库: %s:%s/%s\n", host, port, dbname)
 
-	tablePrefix := os.Getenv("TABLE_PREFIX")
-	realTableName := tablePrefix + tableName
-	fmt.Printf("🔍 获取到表结构: %s\n", realTableName)
+	fmt.Printf("🔍 获取到表结构: %s\n", fullTableName)
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, pass, host, port, dbname)
 
@@ -89,10 +98,10 @@ func GenerateModelFromTable(tableName string) error {
 	}
 	defer db.Close()
 
-	fields, err := fetchColumns(db, realTableName)
+	fields, err := FetchColumns(db, fullTableName)
 	if err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok && mysqlErr.Number == 1146 {
-			return fmt.Errorf("❌ 查询表结构失败: 表 %s 不存在", realTableName)
+			return fmt.Errorf("❌ 查询表结构失败: 表 %s 不存在", fullTableName)
 		}
 		return fmt.Errorf("查询表结构失败: %v", err)
 	}
@@ -166,4 +175,9 @@ func GenerateModelFromTable(tableName string) error {
 
 	fmt.Println("✅ 模型生成成功:", outputPath)
 	return nil
+}
+
+// FetchTableFields is a wrapper for FetchColumns to fetch table fields.
+func FetchTableFields(db *sql.DB, tableName string) ([]Field, error) {
+	return FetchColumns(db, tableName)
 }

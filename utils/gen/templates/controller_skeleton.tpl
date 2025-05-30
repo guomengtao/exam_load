@@ -1,60 +1,88 @@
+// ⚠️ 本文件为控制器骨架模板，禁止直接修改任何生成器生成的文件！
+// 如需调整，请修改本模板，并通过 go run utils/gen/gen.go -table=表名 -cmd=c 等命令重新生成覆盖。
+
 package controller
 
 import (
-	"net/http"
-	"github.com/gin-gonic/gin"
 	"gin-go-test/app/biz"
-	    "strconv"  // 👈 加上这个
+	"gin-go-test/app/models"
+	"gin-go-test/utils"
+	"github.com/gin-gonic/gin"
 )
 
-// {{.ControllerName}}Skeleton 骨架层
-type {{.ControllerName}}Skeleton struct {
-	biz *biz.{{.ControllerName}}Biz
+// {{.ModelName}}Skeleton 控制器骨架
+type {{.ModelName}}Skeleton struct {
+	biz *biz.{{.ModelName}}Biz
 }
 
-// New{{.ControllerName}}Skeleton 构造函数，传入业务层实例
-func New{{.ControllerName}}Skeleton(biz *biz.{{.ControllerName}}Biz) *{{.ControllerName}}Skeleton {
-	return &{{.ControllerName}}Skeleton{
-		biz: biz,
-	}
+// New{{.ModelName}}Skeleton 创建新的{{.ModelName}}Skeleton实例
+func New{{.ModelName}}Skeleton(biz *biz.{{.ModelName}}Biz) *{{.ModelName}}Skeleton {
+	return &{{.ModelName}}Skeleton{biz: biz}
 }
 
-// Hello 返回默认信息
-func (s *{{.ControllerName}}Skeleton) Hello() string {
-	return "{{.HelloMessage}}"
-}
-
-// CountHandler 查询总数，调用业务层
-func (s *{{.ControllerName}}Skeleton) CountHandler(c *gin.Context) {
+// CountHandler 获取记录总数
+func (s *{{.ModelName}}Skeleton) CountHandler(c *gin.Context) {
 	count, err := s.biz.GetCount()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "查询失败: " + err.Error()})
+		utils.Error(c, "获取记录总数失败: "+err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"count": count})
+	utils.Success(c, gin.H{"count": count})
 }
 
-// ListHandler 分页列表接口，调用业务层
-func (s *{{.ControllerName}}Skeleton) ListHandler(c *gin.Context) {
-	page := 1
-	pageSize := 10
-
-	if p := c.Query("page"); p != "" {
-		if parsedPage, err := strconv.Atoi(p); err == nil && parsedPage > 0 {
-			page = parsedPage
-		}
-	}
-
-	if ps := c.Query("pageSize"); ps != "" {
-		if parsedPageSize, err := strconv.Atoi(ps); err == nil && parsedPageSize > 0 {
-			pageSize = parsedPageSize
-		}
-	}
-
-	list, total, err := s.biz.List(page, pageSize)
+// ListHandler 获取记录列表
+func (s *{{.ModelName}}Skeleton) ListHandler(c *gin.Context) {
+	page := utils.GetPage(c)
+	pageSize := utils.GetPageSize(c)
+	items, err := s.biz.List(page, pageSize)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "查询失败: " + err.Error()})
+		utils.Error(c, "获取记录列表失败: "+err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"list": list, "total": total})
+	utils.PageSuccess(c, items, int64(len(items)))
+}
+
+// BatchCreateHandler 批量创建记录
+func (s *{{.ModelName}}Skeleton) BatchCreateHandler(c *gin.Context) {
+	var items []*models.{{.ModelName}}
+	if err := c.ShouldBindJSON(&items); err != nil {
+		utils.Error(c, "请求参数错误: "+err.Error())
+		return
+	}
+	createdItems, errs := s.biz.BatchCreate(items)
+	if len(errs) > 0 {
+		utils.Error(c, "批量创建记录失败: "+errs[0].Error())
+		return
+	}
+	utils.Success(c, gin.H{"items": createdItems})
+}
+
+// BatchUpdateHandler 批量更新记录
+func (s *{{.ModelName}}Skeleton) BatchUpdateHandler(c *gin.Context) {
+	var items []*models.{{.ModelName}}
+	if err := c.ShouldBindJSON(&items); err != nil {
+		utils.Error(c, "请求参数错误: "+err.Error())
+		return
+	}
+	updatedItems, errs := s.biz.BatchUpdate(items)
+	if len(errs) > 0 {
+		utils.Error(c, "批量更新记录失败: "+errs[0].Error())
+		return
+	}
+	utils.Success(c, gin.H{"items": updatedItems})
+}
+
+// BatchDeleteHandler 批量删除记录
+func (s *{{.ModelName}}Skeleton) BatchDeleteHandler(c *gin.Context) {
+	var ids []int
+	if err := c.ShouldBindJSON(&ids); err != nil {
+		utils.Error(c, "请求参数错误: "+err.Error())
+		return
+	}
+	errs := s.biz.BatchDelete(ids)
+	if len(errs) > 0 {
+		utils.Error(c, "批量删除记录失败: "+errs[0].Error())
+		return
+	}
+	utils.Success(c, gin.H{"message": "删除成功"})
 }

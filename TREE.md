@@ -3,6 +3,8 @@
 ├── app
 │   ├── biz
 │   │   ├── role_biz.go
+│   │   ├── role_biz_test.go
+│   │   ├── teacher_biz.go
 │   │   ├── user_biz.go
 │   │   └── user_biz.go.back
 │   ├── controllers
@@ -22,37 +24,42 @@
 │   │   ├── role_controller_test.go
 │   │   ├── status_controller.go
 │   │   ├── task_controller.go
+│   │   ├── teacher_controller.go
 │   │   └── user_controller.go
 │   ├── models
 │   │   ├── admin.go
 │   │   ├── exam_answer.go
 │   │   ├── member.go
 │   │   ├── role.go
+│   │   ├── teacher.go
 │   │   └── user.go
-│   └── services
-│       ├── admin_service.go
-│       ├── admin_service_test.go
-│       ├── csv_importer.go
-│       ├── csv_importer_test.go
-│       ├── export_answer_service.go
-│       ├── export_answer_service_test.go
-│       ├── main_test.go
-│       ├── member_service.go
-│       ├── member_service_test.go
-│       ├── mock_user_pool.go
-│       ├── mock_user_pool_test.go
-│       ├── redis_cleaner.go
-│       ├── redis_cleaner_test.go
-│       ├── redis_importer.go
-│       ├── redis_importer_test.go
-│       ├── redis_writer.go
-│       ├── redis_writer_test.go
-│       ├── role_service.go
-│       ├── role_service_test.go
-│       ├── task_runner.go
-│       ├── user_service.go
-│       ├── user_service.go.back
-│       └── user_service_test.go
+│   ├── services
+│   │   ├── admin_service.go
+│   │   ├── admin_service_test.go
+│   │   ├── csv_importer.go
+│   │   ├── csv_importer_test.go
+│   │   ├── export_answer_service.go
+│   │   ├── export_answer_service_test.go
+│   │   ├── main_test.go
+│   │   ├── member_service.go
+│   │   ├── member_service_test.go
+│   │   ├── mock_user_pool.go
+│   │   ├── mock_user_pool_test.go
+│   │   ├── redis_cleaner.go
+│   │   ├── redis_cleaner_test.go
+│   │   ├── redis_importer.go
+│   │   ├── redis_importer_test.go
+│   │   ├── redis_writer.go
+│   │   ├── redis_writer_test.go
+│   │   ├── role_service.go
+│   │   ├── role_service_test.go
+│   │   ├── task_runner.go
+│   │   ├── teacher_service.go
+│   │   ├── user_service.go
+│   │   ├── user_service.go.back
+│   │   └── user_service_test.go
+│   └── validators
+│       └── role_validator.go
 ├── ARCHITECTURE.md
 ├── auth
 │   ├── auth.go
@@ -60,6 +67,7 @@
 │   └── permission.go
 ├── config
 │   └── config.go
+├── dev_notes.md
 ├── docs
 │   ├── data
 │   │   ├── full_schema_and_data.sql
@@ -151,27 +159,45 @@
     │   ├── gen_back.go.back
     │   ├── gen.go
     │   ├── Gen_logic.md
+    │   ├── meta
+    │   │   └── field.go
     │   └── templates
+    │       ├── biz
+    │       │   ├── biz_skeleton.tpl
+    │       │   └── biz.tpl
     │       ├── biz_skeleton.tpl
     │       ├── biz.tpl
+    │       ├── controller
+    │       │   └── controller.tpl
+    │       ├── controller_skeleton.tpl
+    │       ├── controller_test.tpl
     │       ├── controller.tpl
+    │       ├── model
+    │       │   └── model.tpl
     │       ├── model.tpl
+    │       ├── service
+    │       │   ├── service.tpl
+    │       │   └── skeleton.tpl
     │       ├── service_skeleton.tpl
     │       ├── service.tpl
-    │       └── skeleton.tpl
+    │       └── validator
+    │           └── validator.tpl
     ├── generated
     │   ├── biz
     │   │   ├── role_biz_skeleton.go
+    │   │   ├── teacher_biz_skeleton.go
     │   │   └── user_biz_skeleton.go
     │   ├── controller
     │   │   ├── boy_skeleton.go
     │   │   ├── king_skeleton.go
     │   │   ├── role_skeleton.go
+    │   │   ├── teacher_skeleton.go
     │   │   └── user_skeleton.go
     │   ├── models
     │   │   └── member.go
     │   ├── service
     │   │   ├── role_service_skeleton.go
+    │   │   ├── teacher_service_skeleton.go
     │   │   └── user_service_skeleton.go
     │   └── services
     │       ├── member_biz.go
@@ -193,4 +219,4 @@
     ├── status.go
     └── time.go
 
-21 directories, 172 files
+28 directories, 191 files

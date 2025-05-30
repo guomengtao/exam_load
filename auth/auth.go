@@ -37,7 +37,8 @@ func LoginHandler(c *gin.Context) {
 
 	// Fallback to DB if Redis miss or empty
 	if err != nil || len(adminData) == 0 {
-		admin, err := services.GetAdminByUsername(req.Username)
+		adminService := services.NewAdminService(utils.GormDB)
+		admin, err := adminService.GetAdminByUsername(req.Username)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"code":    401,
@@ -48,17 +49,17 @@ func LoginHandler(c *gin.Context) {
 		}
 
 		// Save to Redis
-		roleIDStr := strconv.Itoa(admin.RoleID)
+		roleIDStr := strconv.Itoa(admin.RoleId)
 		utils.RedisClient.HSet(context.Background(), cacheKey, map[string]interface{}{
-			"id":       admin.ID,
+			"id":       admin.Id,
 			"username": admin.Username,
 			"password": admin.Password,
-			"role_id":  admin.RoleID,
+			"role_id":  admin.RoleId,
 		})
 		utils.RedisClient.Expire(context.Background(), cacheKey, 24*time.Hour)
 
 		adminData = map[string]string{
-			"id":       strconv.Itoa(admin.ID),
+			"id":       strconv.Itoa(admin.Id),
 			"username": admin.Username,
 			"password": admin.Password,
 			"role_id":  roleIDStr,
