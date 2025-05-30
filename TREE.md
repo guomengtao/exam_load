@@ -15,16 +15,11 @@
 │   │   ├── badminton_game_controller.go
 │   │   ├── badminton_game_controller_mysql_test.go
 │   │   ├── badminton_game_controller_test.go
-│   │   ├── boy_controller.go
 │   │   ├── csv_import_controller.go
 │   │   ├── csv_import_controller_test.go
 │   │   ├── export_controller.go
 │   │   ├── export_controller_test.go
 │   │   ├── file_info_controller.go
-│   │   ├── helloa_controller.go
-│   │   ├── hello_controller.go
-│   │   ├── hello.go
-│   │   ├── king_controller.go
 │   │   ├── main_test.go
 │   │   ├── role_controller.go
 │   │   ├── role_controller_test.go
@@ -90,12 +85,6 @@
 │   │   ├── tm_admin.data.sql
 │   │   ├── tm_admin.mk
 │   │   ├── tm_badminton_game.data.sql
-│   │   ├── tm_exam_answers.data.sql
-│   │   ├── tm_exam_answers.mk
-│   │   ├── tm_exam_papers.data.sql
-│   │   ├── tm_exam_papers.mk
-│   │   ├── tm_exam_template.data.sql
-│   │   ├── tm_exam_template.mk
 │   │   ├── tm_file_info.data.sql
 │   │   ├── tm_permission.data.sql
 │   │   ├── tm_permission.mk
@@ -105,31 +94,7 @@
 │   │   ├── tm_role_permission.mk
 │   │   ├── tm_teacher.data.sql
 │   │   ├── tm_user.data.sql
-│   │   ├── tm_user.mk
-│   │   ├── ym_admin.data.sql
-│   │   ├── ym_admin.mk
-│   │   ├── ym_answer.data.sql
-│   │   ├── ym_answer.mk
-│   │   ├── ym_answer_old.data.sql
-│   │   ├── ym_answer_old.mk
-│   │   ├── ym_article_contens.data.sql
-│   │   ├── ym_article_contens.mk
-│   │   ├── ym_article.data.sql
-│   │   ├── ym_article_limit.data.sql
-│   │   ├── ym_article_limit.mk
-│   │   ├── ym_article.mk
-│   │   ├── ym_cate_contens.data.sql
-│   │   ├── ym_cate_contens.mk
-│   │   ├── ym_cate.data.sql
-│   │   ├── ym_cate.mk
-│   │   ├── ym_guest.data.sql
-│   │   ├── ym_guest.mk
-│   │   ├── ym_link.data.sql
-│   │   ├── ym_link.mk
-│   │   ├── ym_member.data.sql
-│   │   ├── ym_member.mk
-│   │   ├── ym_score_stat.data.sql
-│   │   └── ym_score_stat.mk
+│   │   └── tm_user.mk
 │   ├── data_import_export.md
 │   ├── DEV_GUIDE.md
 │   ├── docs.go
@@ -153,7 +118,6 @@
 │   ├── status.go
 │   ├── upload.go
 │   └── version.go
-├── hello
 ├── LICENSE.md
 ├── main.go
 ├── mysql.sh
@@ -198,9 +162,7 @@
     │   │   └── user_biz_skeleton.go
     │   ├── controller
     │   │   ├── badminton_game_skeleton.go
-    │   │   ├── boy_skeleton.go
     │   │   ├── file_info_skeleton.go
-    │   │   ├── king_skeleton.go
     │   │   ├── role_skeleton.go
     │   │   ├── teacher_skeleton.go
     │   │   └── user_skeleton.go
@@ -214,9 +176,6 @@
     │   │   ├── teacher_service_skeleton.go
     │   │   └── user_service_skeleton.go
     │   └── services
-    │       ├── member_biz.go
-    │       ├── member_service.go
-    │       └── member_service_test.go
     ├── genlib
     │   ├── gen_biz.go
     │   ├── gen_controller.go
@@ -234,4 +193,4 @@
     ├── status.go
     └── time.go
 
-23 directories, 211 files
+23 directories, 170 files
