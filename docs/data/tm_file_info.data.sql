@@ -1,5 +1,5 @@
 -- ----------------------------
--- Table structure for `tm_role`
+-- Table structure for `tm_file_info`
 -- ----------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -12,16 +12,17 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-DROP TABLE IF EXISTS `tm_role`;
+DROP TABLE IF EXISTS `tm_file_info`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `tm_role` (
+CREATE TABLE `tm_file_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) NOT NULL COMMENT '角色名(如admin,editor)',
-  `desc` varchar(100) DEFAULT NULL COMMENT '角色描述',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COMMENT='角色表';
+  `file_name` varchar(255) NOT NULL COMMENT '文件名（必填）',
+  `file_path` varchar(512) DEFAULT NULL COMMENT '文件路径',
+  `file_size` bigint(20) DEFAULT NULL COMMENT '文件大小，单位字节',
+  `uploaded_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '上传时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COMMENT='文件信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -35,6 +36,5 @@ CREATE TABLE `tm_role` (
 
 
 -- ----------------------------
--- Sample data for `tm_role` (最早2条)
+-- Sample data for `tm_file_info` (最早2条)
 -- ----------------------------
-INSERT INTO `tm_role` VALUES (3,'Role3','Description3'),(4,'Role4','Description4'),(5,'admin','系统管理员'),(6,'user','普通用户'),(9,'admin3','系统管理员'),(10,'user3','普通用户');

@@ -2,19 +2,26 @@
 ├── Ai-todo.md
 ├── app
 │   ├── biz
+│   │   ├── admin_biz.go
+│   │   ├── badminton_game_biz.go
+│   │   ├── badminton_game_biz_test.go
+│   │   ├── file_info_biz.go
 │   │   ├── role_biz.go
 │   │   ├── role_biz_test.go
 │   │   ├── teacher_biz.go
 │   │   ├── user_biz.go
 │   │   └── user_biz.go.back
 │   ├── controllers
-│   │   ├── admin_controller.go
 │   │   ├── admin_controller_test.go
+│   │   ├── badminton_game_controller.go
+│   │   ├── badminton_game_controller_mysql_test.go
+│   │   ├── badminton_game_controller_test.go
 │   │   ├── boy_controller.go
 │   │   ├── csv_import_controller.go
 │   │   ├── csv_import_controller_test.go
 │   │   ├── export_controller.go
 │   │   ├── export_controller_test.go
+│   │   ├── file_info_controller.go
 │   │   ├── helloa_controller.go
 │   │   ├── hello_controller.go
 │   │   ├── hello.go
@@ -28,7 +35,9 @@
 │   │   └── user_controller.go
 │   ├── models
 │   │   ├── admin.go
+│   │   ├── badminton_game.go
 │   │   ├── exam_answer.go
+│   │   ├── file_info.go
 │   │   ├── member.go
 │   │   ├── role.go
 │   │   ├── teacher.go
@@ -36,10 +45,14 @@
 │   ├── services
 │   │   ├── admin_service.go
 │   │   ├── admin_service_test.go
+│   │   ├── badminton_game_service.go
+│   │   ├── badminton_game_service_test.go
 │   │   ├── csv_importer.go
 │   │   ├── csv_importer_test.go
 │   │   ├── export_answer_service.go
-│   │   ├── export_answer_service_test.go
+│   │   ├── export_answer_service_test.go.back
+│   │   ├── file_info_service.go
+│   │   ├── file_info_service_test.go
 │   │   ├── main_test.go
 │   │   ├── member_service.go
 │   │   ├── member_service_test.go
@@ -55,6 +68,7 @@
 │   │   ├── role_service_test.go
 │   │   ├── task_runner.go
 │   │   ├── teacher_service.go
+│   │   ├── teacher_service_test.go
 │   │   ├── user_service.go
 │   │   ├── user_service.go.back
 │   │   └── user_service_test.go
@@ -65,6 +79,7 @@
 │   ├── auth.go
 │   ├── middleware.go
 │   └── permission.go
+├── chat.md
 ├── config
 │   └── config.go
 ├── dev_notes.md
@@ -116,9 +131,13 @@
 │   │   ├── ym_score_stat.data.sql
 │   │   └── ym_score_stat.mk
 │   ├── data_import_export.md
+│   ├── DEV_GUIDE.md
 │   ├── docs.go
+│   ├── FIELD_UPDATE_POLICY.md
 │   ├── GEN_CURD.md
+│   ├── GEN_UPGRADE.md
 │   ├── goapp_structure.md
+│   ├── mp3.md
 │   ├── swagger.json
 │   └── swagger.yaml
 ├── gin.log
@@ -140,15 +159,19 @@
 ├── hello.log
 ├── LICENSE.md
 ├── main.go
+├── mysql.sh
 ├── output.log
 ├── package.json
 ├── package-lock.json
+├── README_CN.md
+├── README_JA.md
 ├── README.md
 ├── routes
 │   ├── gen_routes.go
 │   └── routes.go
 ├── run.sh
 ├── sql.sh
+├── test_gen_api.sh
 ├── TREE.md
 ├── tree.sh
 └── utils
@@ -156,39 +179,33 @@
     ├── db_gorm.go
     ├── db_sqlx.go
     ├── gen
-    │   ├── gen_back.go.back
     │   ├── gen.go
     │   ├── Gen_logic.md
     │   ├── meta
-    │   │   └── field.go
+    │   │   ├── db.go
+    │   │   ├── field.go
+    │   │   └── naming.go
     │   └── templates
-    │       ├── biz
-    │       │   ├── biz_skeleton.tpl
-    │       │   └── biz.tpl
     │       ├── biz_skeleton.tpl
     │       ├── biz.tpl
-    │       ├── controller
-    │       │   └── controller.tpl
     │       ├── controller_skeleton.tpl
     │       ├── controller_test.tpl
     │       ├── controller.tpl
-    │       ├── model
-    │       │   └── model.tpl
     │       ├── model.tpl
-    │       ├── service
-    │       │   ├── service.tpl
-    │       │   └── skeleton.tpl
     │       ├── service_skeleton.tpl
     │       ├── service.tpl
-    │       └── validator
-    │           └── validator.tpl
+    │       └── validator.tpl
     ├── generated
     │   ├── biz
+    │   │   ├── badminton_game_biz_skeleton.go
+    │   │   ├── file_info_biz_skeleton.go
     │   │   ├── role_biz_skeleton.go
     │   │   ├── teacher_biz_skeleton.go
     │   │   └── user_biz_skeleton.go
     │   ├── controller
+    │   │   ├── badminton_game_skeleton.go
     │   │   ├── boy_skeleton.go
+    │   │   ├── file_info_skeleton.go
     │   │   ├── king_skeleton.go
     │   │   ├── role_skeleton.go
     │   │   ├── teacher_skeleton.go
@@ -196,6 +213,9 @@
     │   ├── models
     │   │   └── member.go
     │   ├── service
+    │   │   ├── badminton_game_service_skeleton.go
+    │   │   ├── common.go
+    │   │   ├── file_info_service_skeleton.go
     │   │   ├── role_service_skeleton.go
     │   │   ├── teacher_service_skeleton.go
     │   │   └── user_service_skeleton.go
@@ -209,14 +229,15 @@
     │   ├── gen_model.go
     │   ├── gen_router.go
     │   ├── gen_service.go
-    │   ├── gen_skeleton.go
     │   └── gen_utills.go
     ├── jwt.go
     ├── password.go
     ├── path.go
     ├── queue.go
     ├── redis.go
+    ├── response.go
+    ├── response_test.go
     ├── status.go
     └── time.go
 
-28 directories, 191 files
+23 directories, 217 files
