@@ -31,8 +31,9 @@ fi
 OUTPUT_DIR="docs/data"
 mkdir -p "$OUTPUT_DIR"
 
-# 4. 获取所有表名
-TABLES=$(mysql -h$DB_HOST -P$DB_PORT -u$DB_USER -p$DB_PASS -D$DB_NAME -e "SHOW TABLES;" | tail -n +2)
+TABLE_PREFIX=${TABLE_PREFIX:-}
+# 4. 获取匹配前缀的表名（如果 TABLE_PREFIX 为空则匹配全部）
+TABLES=$(mysql -h$DB_HOST -P$DB_PORT -u$DB_USER -p$DB_PASS -D$DB_NAME -e "SHOW TABLES LIKE '${TABLE_PREFIX}%';" | tail -n +2)
 
 echo "🔍 正在导出数据库结构和样例数据：$DB_NAME"
 

@@ -9,8 +9,7 @@
 │   │   ├── role_biz.go
 │   │   ├── role_biz_test.go
 │   │   ├── teacher_biz.go
-│   │   ├── user_biz.go
-│   │   └── user_biz.go.back
+│   │   └── user_biz.go
 │   ├── controllers
 │   │   ├── admin_controller_test.go
 │   │   ├── badminton_game_controller.go
@@ -50,7 +49,6 @@
 │   │   ├── csv_importer.go
 │   │   ├── csv_importer_test.go
 │   │   ├── export_answer_service.go
-│   │   ├── export_answer_service_test.go.back
 │   │   ├── file_info_service.go
 │   │   ├── file_info_service_test.go
 │   │   ├── main_test.go
@@ -70,7 +68,6 @@
 │   │   ├── teacher_service.go
 │   │   ├── teacher_service_test.go
 │   │   ├── user_service.go
-│   │   ├── user_service.go.back
 │   │   └── user_service_test.go
 │   └── validators
 │       └── role_validator.go
@@ -79,12 +76,12 @@
 │   ├── auth.go
 │   ├── middleware.go
 │   └── permission.go
-├── chat.md
 ├── config
 │   └── config.go
 ├── dev_notes.md
 ├── docs
 │   ├── data
+│   │   ├── badminton_games.data.sql
 │   │   ├── full_schema_and_data.sql
 │   │   ├── task.data.sql
 │   │   ├── task_log.data.sql
@@ -92,18 +89,21 @@
 │   │   ├── task.mk
 │   │   ├── tm_admin.data.sql
 │   │   ├── tm_admin.mk
+│   │   ├── tm_badminton_game.data.sql
 │   │   ├── tm_exam_answers.data.sql
 │   │   ├── tm_exam_answers.mk
 │   │   ├── tm_exam_papers.data.sql
 │   │   ├── tm_exam_papers.mk
 │   │   ├── tm_exam_template.data.sql
 │   │   ├── tm_exam_template.mk
+│   │   ├── tm_file_info.data.sql
 │   │   ├── tm_permission.data.sql
 │   │   ├── tm_permission.mk
 │   │   ├── tm_role.data.sql
 │   │   ├── tm_role.mk
 │   │   ├── tm_role_permission.data.sql
 │   │   ├── tm_role_permission.mk
+│   │   ├── tm_teacher.data.sql
 │   │   ├── tm_user.data.sql
 │   │   ├── tm_user.mk
 │   │   ├── ym_admin.data.sql
@@ -137,10 +137,8 @@
 │   ├── GEN_CURD.md
 │   ├── GEN_UPGRADE.md
 │   ├── goapp_structure.md
-│   ├── mp3.md
 │   ├── swagger.json
 │   └── swagger.yaml
-├── gin.log
 ├── go.mod
 ├── go.sum
 ├── handlers
@@ -156,15 +154,11 @@
 │   ├── upload.go
 │   └── version.go
 ├── hello
-├── hello.log
 ├── LICENSE.md
 ├── main.go
 ├── mysql.sh
-├── output.log
 ├── package.json
 ├── package-lock.json
-├── README_CN.md
-├── README_JA.md
 ├── README.md
 ├── routes
 │   ├── gen_routes.go
@@ -240,4 +234,4 @@
     ├── status.go
     └── time.go
 
-23 directories, 217 files
+23 directories, 211 files
