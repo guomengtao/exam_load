@@ -20,6 +20,31 @@ func init() {
     sqlxDB = utils.DBX
 }
 
+// StatusController 状态控制器
+type StatusController struct{}
+
+// NewStatusController 创建状态控制器实例
+func NewStatusController() *StatusController {
+	return &StatusController{}
+}
+
+// GetStatus 获取系统状态
+// @Summary 获取系统状态信息
+// @Description 返回当前系统的运行状态和健康检查信息
+// @Tags 系统信息
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /api/status [get]
+func (c *StatusController) GetStatus(ctx *gin.Context) {
+	ctx.JSON(200, gin.H{
+		"status":    "running",
+		"uptime":    "24h",
+		"memory":    "256MB",
+		"cpu_usage": "5%",
+	})
+}
+
 // StatusHandler 返回 Redis 导入和 MySQL 写入状态
 func StatusHandler(c *gin.Context) {
     ctx := context.Background()

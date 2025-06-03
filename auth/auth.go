@@ -2,7 +2,9 @@ package auth
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -134,4 +136,54 @@ func Auth() gin.HandlerFunc {
 
 		c.Next()
 	}
+}
+
+func GetAdminFromCache(adminID string) (*AdminInfo, error) {
+	cacheKey := fmt.Sprintf("admin:info:%s", adminID)
+	
+	// Try to get from Redis
+	adminData, err := utils.RedisHGetAll(cacheKey)
+	if err != nil {
+		return nil, fmt.Errorf("获取管理员缓存失败: %v", err)
+	}
+
+	if len(adminData) > 0 {
+		// Parse from Redis
+		admin := &AdminInfo{}
+		if err := json.Unmarshal([]byte(adminData["data"]), admin); err == nil {
+			return admin, nil
+		}
+	}
+
+	// If not in Redis, get from database
+	admin, err := GetAdminFromDB(adminID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Save to Redis
+	adminJSON, err := json.Marshal(admin)
+	if err == nil {
+		utils.RedisHSet(cacheKey, "data", string(adminJSON))
+		utils.RedisExpire(cacheKey, 24*time.Hour)
+	}
+
+	return admin, nil
+}
+
+// AdminInfo 表示管理员信息
+type AdminInfo struct {
+	ID       int    `json:"id"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+// GetAdminFromDB 从数据库获取管理员信息
+func GetAdminFromDB(adminID string) (*AdminInfo, error) {
+	// 这里实现从数据库获取管理员信息的逻辑
+	return &AdminInfo{
+		ID:       1,
+		Username: "admin", // 实际项目中应使用真实用户名
+		Password: "hashed_password", // 实际项目中应使用加密后的密码
+	}, nil
 }

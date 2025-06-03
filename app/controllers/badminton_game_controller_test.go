@@ -158,7 +158,7 @@ func TestBatchUpdateWithoutPlayerFields(t *testing.T) {
 		derefInt(rec.Id), derefString(rec.Player1), derefString(rec.Player2), derefInt(rec.Score1), derefInt(rec.Score2))
 }
 
-func ptrInt(i int) *int {
+func ptrIntTest(i int) *int {
 	return &i
 }
 
@@ -176,6 +176,6 @@ func derefInt(i *int) int {
 	return *i
 }
 
-func ptrString(s string) *string {
+func ptrStringTest(s string) *string {
 	return &s
 }

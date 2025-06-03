@@ -3,6 +3,7 @@ package utils
 import (
     "context"
     "fmt"
+    "time"
     "github.com/redis/go-redis/v9"
     "gin-go-test/config"
 )
@@ -27,4 +28,50 @@ func InitRedis() {
     } else {
         fmt.Println("✅ Redis connected")
     }
+}
+
+// RedisSet sets a string value in Redis with expiration
+func RedisSet(key string, value string, expiration time.Duration) error {
+    return RedisClient.Set(Ctx, key, value, expiration).Err()
+}
+
+// RedisGet gets a string value from Redis
+func RedisGet(key string) (string, error) {
+    return RedisClient.Get(Ctx, key).Result()
+}
+
+// RedisDelete deletes a key from Redis
+func RedisDelete(key string) error {
+    return RedisClient.Del(Ctx, key).Err()
+}
+
+// RedisExists checks if a key exists in Redis
+func RedisExists(key string) (bool, error) {
+    result, err := RedisClient.Exists(Ctx, key).Result()
+    return result == 1, err
+}
+
+// RedisHSet sets a hash field in Redis
+func RedisHSet(key string, field string, value interface{}) error {
+    return RedisClient.HSet(Ctx, key, field, value).Err()
+}
+
+// RedisHGet gets a hash field from Redis
+func RedisHGet(key string, field string) (string, error) {
+    return RedisClient.HGet(Ctx, key, field).Result()
+}
+
+// RedisHGetAll gets all hash fields from Redis
+func RedisHGetAll(key string) (map[string]string, error) {
+    return RedisClient.HGetAll(Ctx, key).Result()
+}
+
+// RedisHMSet sets multiple hash fields in Redis
+func RedisHMSet(key string, fields map[string]interface{}) error {
+    return RedisClient.HMSet(Ctx, key, fields).Err()
+}
+
+// RedisExpire sets the expiration time for a key
+func RedisExpire(key string, expiration time.Duration) error {
+    return RedisClient.Expire(Ctx, key, expiration).Err()
 }

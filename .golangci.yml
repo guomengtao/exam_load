@@ -1,0 +1,50 @@
+run:
+  timeout: 5m            # 最长运行时间
+  tests: true            # 包含测试文件一起检查
+
+linters:
+  enable:
+    - govet             # Go 官方 vet 工具，检测代码潜在问题
+    - staticcheck       # 静态分析，发现错误、性能问题
+    - errcheck          # 检查未处理的错误
+    - ineffassign       # 检查无效的赋值
+    - gosimple          # 简化代码表达
+    - typecheck         # 类型检查
+    - gofmt             # 格式化检查
+    - goimports         # import 规范检查
+    - gocyclo           # 计算函数复杂度，超过阈值警告
+    - goconst           # 检查重复字符串常量
+
+  disable:
+    - maligned         # 结构体内存对齐，初学阶段不必强制
+    - gochecknoglobals  # 允许全局变量，团队看情况
+    - funlen           # 函数过长，暂时关闭避免打扰
+    - deadcode
+    - gocritic
+
+linters-settings:
+  gocyclo:
+    min-complexity: 15  # 15以上警告，15以下不报
+
+issues:
+  exclude-rules:
+    # 排除特定文件或目录
+    - path: _test\.go
+      linters:
+        - errcheck
+    # 排除测试中某些提示
+
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  severity:
+    error: error
+    warning: warning
+
+output:
+  format: colored-line-number
+
+# 忽略文件/目录配置
+# skip-dirs:
+#   - vendor
+# skip-files:
+#   - generated.go

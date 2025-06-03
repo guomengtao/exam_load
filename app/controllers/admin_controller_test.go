@@ -13,6 +13,7 @@ import (
 )
 
 func TestUpdateOwnPassword(t *testing.T) {
+	adminController := &AdminController{}
 	utils.InitRedis() // Initialize Redis client before testing
 
 	token := os.Getenv("TEST_JWT_TOKEN")
@@ -23,7 +24,7 @@ func TestUpdateOwnPassword(t *testing.T) {
 	}
 
 	router := gin.Default()
-	router.PUT("/admin/password", UpdateOwnPassword)
+	router.PUT("/admin/password", adminController.UpdatePassword)
 
 	payload := map[string]string{
 		"new_password": newPassword,

@@ -67,12 +67,15 @@ type ExamPaper struct {
 
 // Question represents a question in the exam paper
 type Question struct {
-	ID            int64       `json:"id"`
-	Type          string      `json:"type"`
-	Content       string      `json:"content"`
-	Options       interface{} `json:"options"`
-	CorrectAnswer interface{} `json:"correct_answer"`
-	Score         int         `json:"score"`
+	ID                   int64       `json:"id"`
+	Type                 string      `json:"type"`
+	Title                string      `json:"title"`
+	Content              string      `json:"content"`
+	Options              interface{} `json:"options"`
+	CorrectAnswer        interface{} `json:"correct_answer"`
+	CorrectAnswerBitmask interface{} `json:"correct_answer_bitmask"`
+	Score                int         `json:"score"`
+	Analysis             string      `json:"analysis"`
 }
 
 // AnswerService handles the data operations for exam answers
@@ -269,3 +272,16 @@ func (s *AnswerService) GetExamPaper(ctx context.Context, examUUID string) (*Exa
 
 	return paper, nil
 }
+
+// AnswerServiceInterface 便于 mock 的接口
+//go:generate mockery --name=AnswerServiceInterface --output=../mocks --case=underscore
+// 你可以用 mockery 工具自动生成 mock
+
+type AnswerServiceInterface interface {
+	SaveToRedis(ctx context.Context, data map[string]interface{}) error
+	AsyncSaveToDatabase(ctx context.Context, data map[string]interface{})
+	GetAnswerRecord(ctx context.Context, recordID string) (*AnswerResponse, error)
+	GetExamPaper(ctx context.Context, examUUID string) (*ExamPaper, error)
+}
+
+var _ AnswerServiceInterface = (*AnswerService)(nil)

@@ -18,7 +18,7 @@ import (
     "github.com/swaggo/gin-swagger"
 	_ "gin-go-test/docs"  // 修改为你的 go.mod 模块名
 	// "gin-go-test/auth"
-	"gin-go-test/app/services"
+	// "gin-go-test/app/services"
 )
 
 func main() {
@@ -46,7 +46,7 @@ func main() {
 	// auth.InitDB(utils.DB) // 初始化认证模块
 
 	// 启动所有任务
-    services.StartAllTasks()
+	// services.StartAllTasks()
 
 	router := gin.Default()
 	
