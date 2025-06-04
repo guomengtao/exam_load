@@ -14,6 +14,9 @@ func RegisterGeneratedRoutes(router *gin.Engine) {
 	controllers.RegisterTeacherRoutes(router, utils.GormDB)
 	controllers.RegisterFileInfoRoutes(router, utils.GormDB)
 	controllers.RegisterBadmintonGameRoutes(router, utils.GormDB)
+	controllers.RegisterExamTemplateRoutes(router, utils.GormDB)
+	controllers.RegisterExamPaperRoutes(router, utils.GormDB)
+	controllers.RegisterExamPapersRoutes(router, utils.GormDB)
 }
 
 // RegisterRoutes 注册所有路由

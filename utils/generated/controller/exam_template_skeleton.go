@@ -10,18 +10,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// {{.ModelName}}Skeleton 控制器骨架
-type {{.ModelName}}Skeleton struct {
-	biz *biz.{{.ModelName}}Biz
+// ExamTemplateSkeleton 控制器骨架
+type ExamTemplateSkeleton struct {
+	biz *biz.ExamTemplateBiz
 }
 
-// New{{.ModelName}}Skeleton 创建新的{{.ModelName}}Skeleton实例
-func New{{.ModelName}}Skeleton(biz *biz.{{.ModelName}}Biz) *{{.ModelName}}Skeleton {
-	return &{{.ModelName}}Skeleton{biz: biz}
+// NewExamTemplateSkeleton 创建新的ExamTemplateSkeleton实例
+func NewExamTemplateSkeleton(biz *biz.ExamTemplateBiz) *ExamTemplateSkeleton {
+	return &ExamTemplateSkeleton{biz: biz}
 }
 
 // CountHandler 获取记录总数
-func (s *{{.ModelName}}Skeleton) CountHandler(c *gin.Context) {
+func (s *ExamTemplateSkeleton) CountHandler(c *gin.Context) {
 	count, err := s.biz.GetCount()
 	if err != nil {
 		utils.Error(c, "获取记录总数失败: "+err.Error())
@@ -31,7 +31,7 @@ func (s *{{.ModelName}}Skeleton) CountHandler(c *gin.Context) {
 }
 
 // ListHandler 获取记录列表
-func (s *{{.ModelName}}Skeleton) ListHandler(c *gin.Context) {
+func (s *ExamTemplateSkeleton) ListHandler(c *gin.Context) {
 	page := utils.GetPage(c)
 	pageSize := utils.GetPageSize(c)
 	sort := c.DefaultQuery("sort", "id")
@@ -45,8 +45,8 @@ func (s *{{.ModelName}}Skeleton) ListHandler(c *gin.Context) {
 }
 
 // BatchCreateHandler 批量创建记录
-func (s *{{.ModelName}}Skeleton) BatchCreateHandler(c *gin.Context) {
-	var items []*models.{{.ModelName}}
+func (s *ExamTemplateSkeleton) BatchCreateHandler(c *gin.Context) {
+	var items []*models.ExamTemplate
 	if err := c.ShouldBindJSON(&items); err != nil {
 		utils.Error(c, "请求参数错误: "+err.Error())
 		return
@@ -60,8 +60,8 @@ func (s *{{.ModelName}}Skeleton) BatchCreateHandler(c *gin.Context) {
 }
 
 // BatchUpdateHandler 批量更新记录
-func (s *{{.ModelName}}Skeleton) BatchUpdateHandler(c *gin.Context) {
-	var items []*models.{{.ModelName}}
+func (s *ExamTemplateSkeleton) BatchUpdateHandler(c *gin.Context) {
+	var items []*models.ExamTemplate
 	if err := c.ShouldBindJSON(&items); err != nil {
 		utils.Error(c, "请求参数错误: "+err.Error())
 		return
@@ -75,7 +75,7 @@ func (s *{{.ModelName}}Skeleton) BatchUpdateHandler(c *gin.Context) {
 }
 
 // BatchDeleteHandler 批量删除记录
-func (s *{{.ModelName}}Skeleton) BatchDeleteHandler(c *gin.Context) {
+func (s *ExamTemplateSkeleton) BatchDeleteHandler(c *gin.Context) {
 	var ids []int
 	if err := c.ShouldBindJSON(&ids); err != nil {
 		utils.Error(c, "请求参数错误: "+err.Error())
@@ -90,7 +90,7 @@ func (s *{{.ModelName}}Skeleton) BatchDeleteHandler(c *gin.Context) {
 }
 
 // GetDetail 获取单条详情
-func (s *{{.ModelName}}Skeleton) GetDetail(c *gin.Context) {
+func (s *ExamTemplateSkeleton) GetDetail(c *gin.Context) {
 	id := c.Param("id")
 	item, err := s.biz.GetDetail(id)
 	if err != nil {

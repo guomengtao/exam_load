@@ -42,20 +42,11 @@ func SetupRoutes(router *gin.Engine) {
 		examTemplate := authGroup.Group("/exam_template")
 		examTemplate.Use(auth.PermissionMiddleware("exam:manage"))
 		{
-			examTemplateController := controllers.NewExamTemplateController(utils.GormDB)
-			examTemplate.GET("", examTemplateController.GetExamTemplate)
-			examTemplate.POST("", examTemplateController.CreateExam)
-			examTemplate.PUT("", examTemplateController.UpdateExamTemplate)
+			// 删除 examTemplateController 相关的三行路由注册代码
 		}
 
 		// 试卷管理
-		examPaper := authGroup.Group("/exam_paper")
-		{
-			examPaperController := controllers.NewExamPaperController(utils.GormDB)
-			examPaper.GET("", examPaperController.GetExam)
-			examPaper.POST("", examPaperController.CreateExamPaper)
-			examPaper.GET("/redis", examPaperController.ListExamPapersFromRedis)
-		}
+		// 已用生成器统一注册，无需手动注册 examPaperController 相关路由
 	}
 
 	// 路由管理相关接口

@@ -106,51 +106,12 @@ func GenerateModelFromTable(tableName string) error {
 		return fmt.Errorf("查询表结构失败: %v", err)
 	}
 
-	fmt.Println("⚙️ 表字段信息:")
-	for _, col := range fields {
-		fmt.Printf("  - %s (%s)\n", col.Name, col.Type)
-	}
-
-	maxNameLen := 0
-	maxTypeLen := 0
-	for _, f := range fields {
-		if len(f.Name) > maxNameLen {
-			maxNameLen = len(f.Name)
-		}
-		if len(f.Type) > maxTypeLen {
-			maxTypeLen = len(f.Type)
-		}
-	}
-
-	pad := func(s string, l int) string {
-		for len(s) < l {
-			s += " "
-		}
-		return s
-	}
-
-	for i := range fields {
-		fields[i].Name = pad(fields[i].Name, maxNameLen)
-		fields[i].Type = pad(fields[i].Type, maxTypeLen)
-	}
-
-	importsMap := make(map[string]struct{})
-	for _, f := range fields {
-		if f.Type == "time.Time" {
-			importsMap["time"] = struct{}{}
-		}
-	}
-	var imports []string
-	for imp := range importsMap {
-		imports = append(imports, imp)
-	}
-
 	modelName := toCamelCase(tableName)
 
 	data := ModelTemplateData{
 		ModelName: modelName,
 		Fields:    fields,
-		Imports:   imports,
+		Imports:   []string{},
 	}
 
 	tmpl, err := template.ParseFiles("utils/gen/templates/model.tpl")

@@ -96,7 +96,7 @@ func (c *RouteController) RefreshRoutes(ctx *gin.Context) {
 // @Router /api/route/list [get]
 func (c *RouteController) GetRoutes(ctx *gin.Context) {
     pageStr := ctx.DefaultQuery("page", "1")
-    sizeStr := ctx.DefaultQuery("size", "10")
+    sizeStr := ctx.DefaultQuery("size", "100")
     status := ctx.Query("status")
     group := ctx.Query("group")
 

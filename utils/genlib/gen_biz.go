@@ -153,6 +153,5 @@ func GenerateBizSkeleton(table string, hasList bool) error {
 		return err
 	}
 
-	log.Printf("✅ 生成 Biz Skeleton 文件成功: %s", bizSkeletonFile)
 	return nil
 }

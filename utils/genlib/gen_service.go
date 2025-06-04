@@ -157,7 +157,6 @@ func GenerateServiceFromTable(tableName string) error {
 		return fmt.Errorf("渲染模板失败: %v", err)
 	}
 
-	fmt.Println("✅ 服务生成成功:", outputPath)
 	return nil
 }
 
@@ -226,6 +225,5 @@ func GenerateServiceSkeleton(db *sql.DB, tableName string, tmpl *template.Templa
 		return fmt.Errorf("渲染骨架模板失败: %v", err)
 	}
 
-	fmt.Println("✅ 骨架生成成功:", outputPath)
 	return nil
 }

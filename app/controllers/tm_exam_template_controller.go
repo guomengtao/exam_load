@@ -9,14 +9,13 @@ import (
 	"gorm.io/gorm"
 )
 
-// RegisterExamPaperRoutes 注册 ExamPapers 相关路由
-func RegisterExamPaperRoutes(router *gin.Engine, db *gorm.DB) {
-	group := router.Group("/api/exam_paper")
-	skeleton := controller.NewExamPapersSkeleton(biz.NewExamPapersBiz(services.NewExamPapersService(db)))
+// RegisterTmExamTemplateRoutes 注册 TmExamTemplate 相关路由
+func RegisterTmExamTemplateRoutes(router *gin.Engine, db *gorm.DB) {
+	group := router.Group("/api/tm_exam_template")
+	skeleton := controller.NewTmExamTemplateSkeleton(biz.NewTmExamTemplateBiz(services.NewTmExamTemplateService(db)))
 	group.GET("/count", skeleton.CountHandler)
 	group.GET("/list", skeleton.ListHandler)
 	group.POST("", skeleton.BatchCreateHandler)
 	group.PUT("", skeleton.BatchUpdateHandler)
 	group.DELETE("", skeleton.BatchDeleteHandler)
-	group.GET("/:id", skeleton.GetDetail)
 }

@@ -49,13 +49,12 @@ func (s *{{.ModelName}}Service) BatchCreate(items []models.{{.ModelName}}) ([]mo
 }
 
 // BatchUpdate 批量更新记录
-func (s *{{.ModelName}}Service) BatchUpdate(items []models.{{.ModelName}}) error {
+func (s *{{.ModelName}}Service) BatchUpdate(items []models.{{.ModelName}}) ([]models.{{.ModelName}}, []error) {
+	var updatedItems []models.{{.ModelName}}
+	var errs []error
+
 	for _, item := range items {
-		// 构造更新 map,只放请求体中出现的字段
 		updateMap := make(map[string]interface{})
-		
-		// 如果字段在请求体中出现,就加入更新 map
-		// 注意:即使值是 ""、0、null,也要更新
 		{{- range .Fields }}
 		{{- if ne .Name "Id" }}
 		if item.{{ .GoName }} != nil {
@@ -63,15 +62,20 @@ func (s *{{.ModelName}}Service) BatchUpdate(items []models.{{.ModelName}}) error
 		}
 		{{- end }}
 		{{- end }}
-
-		// 执行更新
 		if len(updateMap) > 0 {
 			if err := s.db.Model(&models.{{.ModelName}}{}).Where("id = ?", *item.Id).Updates(updateMap).Error; err != nil {
-				return err
+				errs = append(errs, err)
+				continue
 			}
+			var updatedItem models.{{.ModelName}}
+			if err := s.db.First(&updatedItem, *item.Id).Error; err != nil {
+				errs = append(errs, err)
+				continue
+			}
+			updatedItems = append(updatedItems, updatedItem)
 		}
 	}
-	return nil
+	return updatedItems, errs
 }
 
 // BatchDelete 批量删除记录
@@ -89,4 +93,29 @@ func (s *{{.ModelName}}Service) BatchDelete(ids []uint) []error {
 
 func (s *{{.ModelName}}Service) GetDB() *gorm.DB {
 	return s.db
+}
+
+func (s *{{.ModelName}}Service) GetDetail(id string) (*models.{{.ModelName}}, error) {
+	var item models.{{.ModelName}}
+	if err := s.db.First(&item, id).Error; err != nil {
+		return nil, err
+	}
+	return &item, nil
+}
+
+func (s *{{.ModelName}}Service) ListWithOrder(page, pageSize int, sort, order string) ([]*models.{{.ModelName}}, []error) {
+	var items []*models.{{.ModelName}}
+	db := s.db.Model(&models.{{.ModelName}}{})
+	if sort == "" {
+		sort = "id"
+	}
+	if order == "" {
+		order = "desc"
+	}
+	db = db.Order(sort + " " + order)
+	err := db.Offset((page-1)*pageSize).Limit(pageSize).Find(&items).Error
+	if err != nil {
+		return nil, []error{err}
+	}
+	return items, nil
 }

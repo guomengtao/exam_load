@@ -24,8 +24,12 @@ func (b *{{.ModelName}}Biz) GetCount() (int64, error) {
 }
 
 // List 获取记录列表
-func (b *{{.ModelName}}Biz) List(page, pageSize int) ([]models.{{.ModelName}}, error) {
-	return b.service.List(page, pageSize)
+func (b *{{.ModelName}}Biz) List(page, pageSize int) ([]models.{{.ModelName}}, []error) {
+	result, err := b.service.List(page, pageSize)
+	if err != nil {
+		return nil, []error{err}
+	}
+	return result, nil
 }
 
 // BatchCreate 批量创建记录
@@ -40,7 +44,6 @@ func (b *{{.ModelName}}Biz) BatchCreate(items []*models.{{.ModelName}}) ([]model
 
 // BatchUpdate 批量更新记录
 func (b *{{.ModelName}}Biz) BatchUpdate(items []*models.{{.ModelName}}) ([]models.{{.ModelName}}, []error) {
-	// 将 []*models.{{.ModelName}} 转换为 []models.{{.ModelName}}
 	modelItems := make([]models.{{.ModelName}}, len(items))
 	for i, item := range items {
 		modelItems[i] = *item
@@ -56,4 +59,12 @@ func (b *{{.ModelName}}Biz) BatchDelete(ids []int) []error {
 		uintIds[i] = uint(id)
 	}
 	return b.service.BatchDelete(uintIds)
+}
+
+func (b *{{.ModelName}}Biz) GetDetail(id string) (*models.{{.ModelName}}, error) {
+	return b.service.GetDetail(id)
+}
+
+func (b *{{.ModelName}}Biz) ListWithOrder(page, pageSize int, sort, order string) ([]*models.{{.ModelName}}, []error) {
+	return b.service.ListWithOrder(page, pageSize, sort, order)
 }

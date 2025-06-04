@@ -44,7 +44,6 @@ func CheckDBConnection(db *sql.DB) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("database connection failed: %w", err)
 	}
-	fmt.Println("✅ Database connection successful!")
 	return true, nil
 }
 
@@ -141,13 +140,11 @@ ORDER BY ORDINAL_POSITION
 // mapMySQLTypeToGoType maps common MySQL data types to Go types.
 // This is a simplified mapping and may need extension for other types.
 func mapMySQLTypeToGoType(mysqlType string) string {
-	fmt.Printf("Mapping MySQL type: %s\n", mysqlType)
 	switch strings.ToLower(mysqlType) {
 	case "char", "varchar", "text", "tinytext", "mediumtext", "longtext", "enum", "set":
 		return "string"
 	case "int", "integer", "smallint", "mediumint", "year":
 		// Explicitly handle "mediumint" as int
-		fmt.Printf("MySQL type %s mapped to Go type: int\n", mysqlType)
 		return "int"
 	case "bigint":
 		return "int64"
@@ -168,7 +165,6 @@ func mapMySQLTypeToGoType(mysqlType string) string {
 		return "[]byte"
 	default:
 		// Unknown types default to string
-		fmt.Printf("Unknown MySQL type %s, defaulting to Go type: string\n", mysqlType)
 		return "string"
 	}
 }

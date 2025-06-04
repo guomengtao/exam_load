@@ -14,6 +14,36 @@ var RedisClient *redis.Client
 // Ctx is the context used for Redis operations.
 var Ctx = context.Background()
 
+// RedisHelper defines the interface for Redis operations
+type RedisHelper interface {
+	Get(ctx context.Context, key string) (string, error)
+	Scan(ctx context.Context, matchPattern string) ([]string, error)
+}
+
+// DefaultRedisHelper implements RedisHelper using Redis client
+type DefaultRedisHelper struct{}
+
+func (h *DefaultRedisHelper) Get(ctx context.Context, key string) (string, error) {
+	return RedisClient.Get(ctx, key).Result()
+}
+
+func (h *DefaultRedisHelper) Scan(ctx context.Context, matchPattern string) ([]string, error) {
+	var keys []string
+	var cursor uint64
+	for {
+		scannedKeys, nextCursor, err := RedisClient.Scan(ctx, cursor, matchPattern, 100).Result()
+		if err != nil {
+			return nil, err
+		}
+		keys = append(keys, scannedKeys...)
+		cursor = nextCursor
+		if cursor == 0 {
+			break
+		}
+	}
+	return keys, nil
+}
+
 // InitRedis initializes the Redis client with configurations and tests the connection.
 func InitRedis() {
     RedisClient = redis.NewClient(&redis.Options{

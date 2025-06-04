@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -37,8 +38,9 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok {
+			fmt.Printf("Token claims: %+v\n", claims)
 			c.Set("adminID", claims["admin_id"])
-			c.Set("role", claims["role"])
+			c.Set("role", claims["role_id"])
 		}
 		c.Next()
 	}
@@ -46,7 +48,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 func PermissionMiddleware(requiredPermission string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		role, exists := c.Get("role")
+		roleID, exists := c.Get("role")
 		if !exists {
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
 				"code":    http.StatusForbidden,
@@ -55,13 +57,24 @@ func PermissionMiddleware(requiredPermission string) gin.HandlerFunc {
 			return
 		}
 
-		if requiredPermission == "exam:manage" && role != "admin" {
+		// 将 roleID 转换为字符串
+		roleIDStr := fmt.Sprintf("%v", roleID)
+		
+		// 如果是管理员角色（role_id = "1"），直接放行
+		if roleIDStr == "1" {
+			c.Next()
+			return
+		}
+
+		// 其他角色需要根据具体权限判断
+		if requiredPermission == "exam:manage" {
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
 				"code":    http.StatusForbidden,
 				"message": "需要管理员权限",
 			})
 			return
 		}
+		
 		c.Next()
 	}
 }

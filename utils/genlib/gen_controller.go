@@ -1,4 +1,3 @@
- 
 package genlib
 
 import (
@@ -46,8 +45,6 @@ func GenerateControllerWithAppend(tableName, moduleName string) error {
 		return fmt.Errorf("渲染模板失败: %v", err)
 	}
 
-	fmt.Println("✅ 控制器及路由已生成到:", outputPath)
-	fmt.Printf("🚀 路由访问示例: /api/%s/\n", routePath)
 	return nil
 }
 // GenerateControllerSkeleton 生成控制器骨架（controller_skeleton）
@@ -109,6 +106,5 @@ func GenerateControllerSkeleton(db *sql.DB, tableName, moduleName string, overwr
 		return fmt.Errorf("渲染模板失败: %v", err)
 	}
 
-	fmt.Println("✅ 控制器骨架已生成到:", outputPath)
 	return nil
 }
