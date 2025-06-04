@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"gin-go-test/app/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"gin-go-test/app/services"
 )
 
 func TaskControlHandler(c *gin.Context) {

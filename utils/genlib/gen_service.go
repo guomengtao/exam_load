@@ -3,11 +3,11 @@ package genlib
 import (
 	"database/sql"
 	"fmt"
+	meta "gin-go-test/utils/gen/meta"
 	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
-	meta "gin-go-test/utils/gen/meta"
 )
 
 // ServiceTemplateData holds data passed to the service templates.

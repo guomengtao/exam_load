@@ -26,4 +26,4 @@ func (c *VersionController) GetVersion(ctx *gin.Context) {
 		"build":   "2024-03-21",
 		"status":  "stable",
 	})
-} 
+}

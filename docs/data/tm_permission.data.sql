@@ -19,6 +19,7 @@ CREATE TABLE `tm_permission` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(30) NOT NULL COMMENT '权限代码(如user:create)',
   `desc` varchar(100) DEFAULT NULL COMMENT '权限描述',
+  `deleted_at` datetime DEFAULT NULL COMMENT '软删除时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COMMENT='权限表';
@@ -37,4 +38,4 @@ CREATE TABLE `tm_permission` (
 -- ----------------------------
 -- Sample data for `tm_permission` (最早2条)
 -- ----------------------------
-INSERT INTO `tm_permission` VALUES (1,'exam:create','创建考试'),(2,'exam:delete','删除考试'),(3,'user:manage','用户管理');
+INSERT INTO `tm_permission` VALUES (1,'exam:create','创建考试',NULL),(2,'exam:delete','删除考试',NULL),(3,'user:manage','用户管理',NULL);

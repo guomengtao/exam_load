@@ -2,11 +2,11 @@ package biz
 
 import (
 	"context"
-	"testing"
-	"time"
+	"gin-go-test/app/services"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"gin-go-test/app/services"
+	"testing"
+	"time"
 )
 
 // MockAnswerService is a mock implementation of AnswerService
@@ -190,12 +190,12 @@ func TestGetExamPaper(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
-		name           string
-		examUUID       string
-		mockPaper      *services.ExamPaper
-		mockError      error
-		expectedError  bool
-		expectedPaper  *services.ExamPaper
+		name          string
+		examUUID      string
+		mockPaper     *services.ExamPaper
+		mockError     error
+		expectedError bool
+		expectedPaper *services.ExamPaper
 	}{
 		{
 			name:     "successful retrieval",
@@ -216,12 +216,12 @@ func TestGetExamPaper(t *testing.T) {
 			},
 		},
 		{
-			name:           "paper not found",
-			examUUID:       "non-existent",
-			mockPaper:      nil,
-			mockError:      assert.AnError,
-			expectedError:  true,
-			expectedPaper:  nil,
+			name:          "paper not found",
+			examUUID:      "non-existent",
+			mockPaper:     nil,
+			mockError:     assert.AnError,
+			expectedError: true,
+			expectedPaper: nil,
 		},
 	}
 
@@ -249,4 +249,4 @@ func TestGetExamPaper(t *testing.T) {
 			mockService.AssertExpectations(t)
 		})
 	}
-} 
+}

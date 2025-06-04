@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"net/http"
-	"github.com/gin-gonic/gin"
 	"gin-go-test/biz"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // ExamPaperRedisController handles Redis-based exam paper operations
@@ -39,4 +39,4 @@ func (c *ExamPaperRedisController) ListExamPapersFromRedis(ctx *gin.Context) {
 		"msg":  "success",
 		"data": response,
 	})
-} 
+}

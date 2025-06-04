@@ -54,4 +54,4 @@ func (c *UploadController) UploadFile(ctx *gin.Context) {
 		"filename": filename,
 		"path":     filepath,
 	})
-} 
+}

@@ -11,8 +11,8 @@ import (
 	"gin-go-test/app/services"
 )
 
-func ptrString(s string) *string { return &s }
-func ptrInt(i int) *int          { return &i }
+func ptrString(s string) *string     { return &s }
+func ptrInt(i int) *int              { return &i }
 func ptrTime(t time.Time) *time.Time { return &t }
 
 func TestBatchUpdate(t *testing.T) {

@@ -3,14 +3,14 @@ package utils
 import (
 	"errors"
 	"fmt"
-	"os"
 	"github.com/golang-jwt/jwt/v5"
+	"os"
 	"strings"
 )
 
 // JWT相关错误
 var (
-	ErrInvalidToken = errors.New("invalid token")
+	ErrInvalidToken    = errors.New("invalid token")
 	ErrInvalidPassword = errors.New("invalid password")
 )
 
@@ -44,7 +44,6 @@ func GetJWTInfo(tokenString string) (map[string]interface{}, error) {
 
 	return nil, errors.New("invalid token")
 }
- 
 
 // ExtractToken 提取 Authorization 头中的 Bearer Token
 func ExtractToken(authHeader string) string {

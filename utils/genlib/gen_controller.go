@@ -1,12 +1,12 @@
 package genlib
 
 import (
+	"database/sql"
 	"fmt"
+	meta "gin-go-test/utils/gen/meta"
 	"os"
 	"strings"
 	"text/template"
-		"database/sql"
-	meta "gin-go-test/utils/gen/meta"
 )
 
 // GenerateControllerWithAppend 路由追加版
@@ -47,6 +47,7 @@ func GenerateControllerWithAppend(tableName, moduleName string) error {
 
 	return nil
 }
+
 // GenerateControllerSkeleton 生成控制器骨架（controller_skeleton）
 func GenerateControllerSkeleton(db *sql.DB, tableName, moduleName string, overwrite bool) error {
 	tmplPath := "utils/gen/templates/controller_skeleton.tpl"

@@ -22,6 +22,7 @@ CREATE TABLE `tm_teacher` (
   `age` int(11) DEFAULT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `school` text NOT NULL,
+  `deleted_at` datetime DEFAULT NULL COMMENT '软删除时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`uuname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

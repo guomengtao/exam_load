@@ -41,4 +41,4 @@ func isZero(v interface{}) bool {
 	default:
 		return v == nil
 	}
-} 
+}

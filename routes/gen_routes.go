@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
 	"gin-go-test/app/controllers"
-	"gin-go-test/utils"
 	"gin-go-test/auth"
+	"gin-go-test/utils"
+	"github.com/gin-gonic/gin"
 )
 
 // RegisterGeneratedRoutes 统一注册所有生成的路由

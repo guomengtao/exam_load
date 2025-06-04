@@ -62,25 +62,24 @@ func (s *TeacherServiceSkeleton) BatchCreate(items []*models.Teacher) (int, []Er
 	var errors []ErrorResponse
 
 	for i, item := range items {
-		
+
 		// id 字段校验
 		fmt.Printf("Creating Teacher: id = %v\n", item.Id)
-		
+
 		// uuname 字段校验
 		fmt.Printf("Creating Teacher: uuname = %v\n", item.Uuname)
-		
+
 		// email 字段校验
 		fmt.Printf("Creating Teacher: email = %v\n", item.Email)
-		
+
 		// age 字段校验
 		fmt.Printf("Creating Teacher: age = %v\n", item.Age)
-		
+
 		// created_at 字段校验
 		fmt.Printf("Creating Teacher: created_at = %v\n", item.CreatedAt)
-		
+
 		// school 字段校验
 		fmt.Printf("Creating Teacher: school = %v\n", item.School)
-		
 
 		// 创建记录
 		if err := tx.Create(item).Error; err != nil {
@@ -127,25 +126,24 @@ func (s *TeacherServiceSkeleton) BatchUpdate(items []*models.Teacher) (int, []Er
 			errors = append(errors, NewErrorResponse(400, fmt.Sprintf("item[%d]: id is required", i), ""))
 			continue
 		}
-		
+
 		// id 字段校验
 		fmt.Printf("Updating Teacher: id = %v\n", item.Id)
-		
+
 		// uuname 字段校验
 		fmt.Printf("Updating Teacher: uuname = %v\n", item.Uuname)
-		
+
 		// email 字段校验
 		fmt.Printf("Updating Teacher: email = %v\n", item.Email)
-		
+
 		// age 字段校验
 		fmt.Printf("Updating Teacher: age = %v\n", item.Age)
-		
+
 		// created_at 字段校验
 		fmt.Printf("Updating Teacher: created_at = %v\n", item.CreatedAt)
-		
+
 		// school 字段校验
 		fmt.Printf("Updating Teacher: school = %v\n", item.School)
-		
 
 		// 检查记录是否存在
 		var existing models.Teacher

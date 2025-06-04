@@ -3,8 +3,8 @@ package utils
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"gin-go-test/config"
+	"log"
 
 	_ "github.com/go-sql-driver/mysql"
 )

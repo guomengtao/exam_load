@@ -9,10 +9,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 	"gin-go-test/app/services"
 	"gin-go-test/utils"
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 const jwtSecret = "your-secret-key"
@@ -140,7 +140,7 @@ func Auth() gin.HandlerFunc {
 
 func GetAdminFromCache(adminID string) (*AdminInfo, error) {
 	cacheKey := fmt.Sprintf("admin:info:%s", adminID)
-	
+
 	// Try to get from Redis
 	adminData, err := utils.RedisHGetAll(cacheKey)
 	if err != nil {
@@ -183,7 +183,7 @@ func GetAdminFromDB(adminID string) (*AdminInfo, error) {
 	// 这里实现从数据库获取管理员信息的逻辑
 	return &AdminInfo{
 		ID:       1,
-		Username: "admin", // 实际项目中应使用真实用户名
+		Username: "admin",           // 实际项目中应使用真实用户名
 		Password: "hashed_password", // 实际项目中应使用加密后的密码
 	}, nil
 }

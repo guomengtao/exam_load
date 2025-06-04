@@ -5,9 +5,10 @@ package controller
 
 import (
 	"gin-go-test/app/biz"
-	"gin-go-test/app/models"
+	"gin-go-test/app/services"
 	"gin-go-test/utils"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // ExamPapersSkeleton 控制器骨架
@@ -36,9 +37,9 @@ func (s *ExamPapersSkeleton) ListHandler(c *gin.Context) {
 	pageSize := utils.GetPageSize(c)
 	sort := c.DefaultQuery("sort", "id")
 	order := c.DefaultQuery("order", "desc")
-	items, errs := s.biz.ListWithOrder(page, pageSize, sort, order)
-	if len(errs) > 0 {
-		utils.Error(c, "获取记录列表失败: "+errs[0].Error())
+	items, err := s.biz.ListWithOrder(page, pageSize, sort, order)
+	if err != nil {
+		utils.Error(c, "获取记录列表失败: "+err.Error())
 		return
 	}
 	utils.PageSuccess(c, items, int64(len(items)))
@@ -51,9 +52,9 @@ func (s *ExamPapersSkeleton) BatchCreateHandler(c *gin.Context) {
 		utils.Error(c, "请求参数错误: "+err.Error())
 		return
 	}
-	createdItems, errs := s.biz.BatchCreate(items)
-	if len(errs) > 0 {
-		utils.Error(c, "批量创建记录失败: "+errs[0].Error())
+	createdItems, err := s.biz.BatchCreate(items)
+	if err != nil {
+		utils.Error(c, "批量创建记录失败: "+err.Error())
 		return
 	}
 	utils.Success(c, gin.H{"items": createdItems})
@@ -66,12 +67,11 @@ func (s *ExamPapersSkeleton) BatchUpdateHandler(c *gin.Context) {
 		utils.Error(c, "请求参数错误: "+err.Error())
 		return
 	}
-	updatedItems, errs := s.biz.BatchUpdate(items)
-	if len(errs) > 0 {
-		utils.Error(c, "批量更新记录失败: "+errs[0].Error())
+	if err := s.biz.BatchUpdate(items); err != nil {
+		utils.Error(c, "批量更新记录失败: "+err.Error())
 		return
 	}
-	utils.Success(c, gin.H{"items": updatedItems})
+	utils.Success(c, gin.H{"message": "更新成功"})
 }
 
 // BatchDeleteHandler 批量删除记录
@@ -81,9 +81,8 @@ func (s *ExamPapersSkeleton) BatchDeleteHandler(c *gin.Context) {
 		utils.Error(c, "请求参数错误: "+err.Error())
 		return
 	}
-	errs := s.biz.BatchDelete(ids)
-	if len(errs) > 0 {
-		utils.Error(c, "批量删除记录失败: "+errs[0].Error())
+	if err := s.biz.BatchDelete(ids); err != nil {
+		utils.Error(c, "批量删除记录失败: "+err.Error())
 		return
 	}
 	utils.Success(c, gin.H{"message": "删除成功"})
@@ -100,5 +99,13 @@ func (s *ExamPapersSkeleton) GetDetail(c *gin.Context) {
 	utils.Success(c, item)
 }
 
-// 路由注册
-group.GET("/:id", s.GetDetail)
+// RegisterExamPapersRoutes 注册 ExamPapers 相关路由
+func RegisterExamPapersRoutes(router *gin.Engine, db *gorm.DB) {
+	skeleton := NewExamPapersSkeleton(biz.NewExamPapersBiz(services.NewExamPapersService(db)))
+	// 注册路由
+	router.GET("/exam_papers", skeleton.ListHandler)
+	router.POST("/exam_papers", skeleton.BatchCreateHandler)
+	router.PUT("/exam_papers/:id", skeleton.BatchUpdateHandler)
+	router.DELETE("/exam_papers/:id", skeleton.BatchDeleteHandler)
+	router.GET("/exam_papers/:id", skeleton.GetDetail)
+}

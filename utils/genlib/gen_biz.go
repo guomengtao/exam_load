@@ -10,30 +10,30 @@ import (
 )
 
 type BizData struct {
-	ModelName string
-	TableName string
-	Package   string
-	BizName   string
-	Imports   string
-	HasList   bool
-	RoutePath string
+	ModelName    string
+	TableName    string
+	Package      string
+	BizName      string
+	Imports      string
+	HasList      bool
+	RoutePath    string
 	ImportModels string
-	ReturnType string
+	ReturnType   string
 }
 
 func GenerateBiz(table string, hasList bool) error {
 	modelName := toCamelCase(table)
 	routePath := strings.ToLower(table)
 	data := BizData{
-		ModelName: modelName,
-		TableName: table,
-		Package:   "biz",
-		BizName:   modelName + "Biz",
-		Imports:   "\"gin-go-test/app/models\"",
-		HasList:   hasList,
-		RoutePath: routePath,
+		ModelName:    modelName,
+		TableName:    table,
+		Package:      "biz",
+		BizName:      modelName + "Biz",
+		Imports:      "\"gin-go-test/app/models\"",
+		HasList:      hasList,
+		RoutePath:    routePath,
 		ImportModels: "gin-go-test/app/models",
-		ReturnType: "[]*models." + modelName,
+		ReturnType:   "[]*models." + modelName,
 	}
 
 	bizTplPath := filepath.Join("utils", "gen", "templates", "biz.tpl")
@@ -115,14 +115,14 @@ func toCamelCase(s string) string {
 func GenerateBizSkeleton(table string, hasList bool) error {
 	modelName := toCamelCase(table)
 	data := BizData{
-		ModelName: modelName,
-		TableName: table,
-		Package:   "biz",
-		BizName:   modelName + "Biz",
-		Imports:   "\"gin-go-test/app/models\"",
-		HasList:   hasList,
+		ModelName:    modelName,
+		TableName:    table,
+		Package:      "biz",
+		BizName:      modelName + "Biz",
+		Imports:      "\"gin-go-test/app/models\"",
+		HasList:      hasList,
 		ImportModels: "gin-go-test/app/models",
-		ReturnType: "[]*models." + modelName,
+		ReturnType:   "[]*models." + modelName,
 	}
 
 	bizSkeletonTplPath := filepath.Join("utils", "gen", "templates", "biz_skeleton.tpl")

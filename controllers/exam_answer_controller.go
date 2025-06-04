@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"net/http"
-	"github.com/gin-gonic/gin"
-	"gin-go-test/biz"
 	"gin-go-test/app/services"
+	"gin-go-test/biz"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // AnswerController handles exam answer related HTTP requests
@@ -124,4 +124,4 @@ func (c *AnswerController) sendErrorResponse(ctx *gin.Context, code int, message
 		response.Error = err.Error()
 	}
 	ctx.JSON(code, response)
-} 
+}

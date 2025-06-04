@@ -2,10 +2,10 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
-	"gin-go-test/utils/generated/controller"
 	"gin-go-test/app/biz"
 	"gin-go-test/app/services"
+	"gin-go-test/utils/generated/controller"
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 

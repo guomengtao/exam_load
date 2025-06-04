@@ -19,6 +19,7 @@ CREATE TABLE `tm_role` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL COMMENT '角色名(如admin,editor)',
   `desc` varchar(100) DEFAULT NULL COMMENT '角色描述',
+  `deleted_at` datetime DEFAULT NULL COMMENT '软删除时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COMMENT='角色表';
@@ -37,4 +38,4 @@ CREATE TABLE `tm_role` (
 -- ----------------------------
 -- Sample data for `tm_role` (最早2条)
 -- ----------------------------
-INSERT INTO `tm_role` VALUES (3,'Role3','Description3'),(4,'Role4','Description4'),(5,'admin','系统管理员'),(6,'user','普通用户'),(9,'admin3','系统管理员'),(10,'user3','普通用户');
+INSERT INTO `tm_role` VALUES (3,'Role3','Description3',NULL),(4,'Role4','Description4',NULL),(5,'admin','系统管理员',NULL),(6,'user','普通用户',NULL),(9,'admin3','系统管理员',NULL),(10,'user3','普通用户',NULL);

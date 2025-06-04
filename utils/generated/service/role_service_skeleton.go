@@ -1,3 +1,6 @@
+// ⚠️ 本文件为服务骨架模板，禁止直接修改任何生成器生成的文件！
+// 如需调整，请修改本模板，并通过 go run utils/gen/gen.go -table=表名 -cmd=s 等命令重新生成覆盖。
+
 package service
 
 import (
@@ -72,6 +75,9 @@ func (s *RoleServiceSkeleton) BatchCreate(items []*models.Role) (int, []ErrorRes
 		// desc 字段校验
 		fmt.Printf("Creating Role: desc = %v\n", item.Desc)
 		
+		// deleted_at 字段校验
+		fmt.Printf("Creating Role: deleted_at = %v\n", item.DeletedAt)
+		
 
 		// 创建记录
 		if err := tx.Create(item).Error; err != nil {
@@ -114,19 +120,22 @@ func (s *RoleServiceSkeleton) BatchUpdate(items []*models.Role) (int, []ErrorRes
 
 	for i, item := range items {
 		// 验证必填字段
-		if item.Id <= 0 {
+		if item.Id == nil || *item.Id <= 0 {
 			errors = append(errors, NewErrorResponse(400, fmt.Sprintf("item[%d]: id is required", i), ""))
 			continue
 		}
 		
 		// id 字段校验
-		fmt.Printf("Updating Role: id = %v\n", item.Id)
+		
 		
 		// name 字段校验
-		fmt.Printf("Updating Role: name = %v\n", item.Name)
+		
 		
 		// desc 字段校验
-		fmt.Printf("Updating Role: desc = %v\n", item.Desc)
+		
+		
+		// deleted_at 字段校验
+		
 		
 
 		// 检查记录是否存在
@@ -140,8 +149,32 @@ func (s *RoleServiceSkeleton) BatchUpdate(items []*models.Role) (int, []ErrorRes
 			continue
 		}
 
-		// 更新记录
-		if err := tx.Model(&existing).Updates(item).Error; err != nil {
+		// 构建只包含非 nil 字段的更新 map
+		updateMap := make(map[string]interface{})
+		
+		if item.Id != nil {
+			updateMap["id"] = *item.Id
+		}
+		
+		if item.Name != nil {
+			updateMap["name"] = *item.Name
+		}
+		
+		if item.Desc != nil {
+			updateMap["desc"] = *item.Desc
+		}
+		
+		if item.DeletedAt != nil {
+			updateMap["deleted_at"] = *item.DeletedAt
+		}
+		
+
+		if len(updateMap) == 0 {
+			errors = append(errors, NewErrorResponse(400, fmt.Sprintf("item[%d]: no fields to update", i), ""))
+			continue
+		}
+
+		if err := tx.Model(&existing).Updates(updateMap).Error; err != nil {
 			errors = append(errors, NewErrorResponse(500, fmt.Sprintf("item[%d]: update failed", i), err.Error()))
 			continue
 		}

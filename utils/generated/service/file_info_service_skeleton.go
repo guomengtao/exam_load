@@ -62,22 +62,21 @@ func (s *FileInfoServiceSkeleton) BatchCreate(items []*models.FileInfo) (int, []
 	var errors []ErrorResponse
 
 	for i, item := range items {
-		
+
 		// id 字段校验
 		fmt.Printf("Creating FileInfo: id = %v\n", item.Id)
-		
+
 		// file_name 字段校验
 		fmt.Printf("Creating FileInfo: file_name = %v\n", item.FileName)
-		
+
 		// file_path 字段校验
 		fmt.Printf("Creating FileInfo: file_path = %v\n", item.FilePath)
-		
+
 		// file_size 字段校验
 		fmt.Printf("Creating FileInfo: file_size = %v\n", item.FileSize)
-		
+
 		// uploaded_at 字段校验
 		fmt.Printf("Creating FileInfo: uploaded_at = %v\n", item.UploadedAt)
-		
 
 		// 创建记录
 		if err := tx.Create(item).Error; err != nil {
@@ -124,22 +123,21 @@ func (s *FileInfoServiceSkeleton) BatchUpdate(items []*models.FileInfo) (int, []
 			errors = append(errors, NewErrorResponse(400, fmt.Sprintf("item[%d]: id is required", i), ""))
 			continue
 		}
-		
+
 		// id 字段校验
 		fmt.Printf("Updating FileInfo: id = %v\n", item.Id)
-		
+
 		// file_name 字段校验
 		fmt.Printf("Updating FileInfo: file_name = %v\n", item.FileName)
-		
+
 		// file_path 字段校验
 		fmt.Printf("Updating FileInfo: file_path = %v\n", item.FilePath)
-		
+
 		// file_size 字段校验
 		fmt.Printf("Updating FileInfo: file_size = %v\n", item.FileSize)
-		
+
 		// uploaded_at 字段校验
 		fmt.Printf("Updating FileInfo: uploaded_at = %v\n", item.UploadedAt)
-		
 
 		// 检查记录是否存在
 		var existing models.FileInfo

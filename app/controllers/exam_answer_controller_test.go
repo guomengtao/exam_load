@@ -4,14 +4,14 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"gin-go-test/app/biz"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"gin-go-test/app/biz"
 )
 
 // MockExamAnswerBiz is a mock implementation of ExamAnswerBiz
@@ -215,4 +215,4 @@ func TestGetExamPaper(t *testing.T) {
 			mockBiz.AssertExpectations(t)
 		})
 	}
-} 
+}

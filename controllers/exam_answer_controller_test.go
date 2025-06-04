@@ -3,13 +3,13 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
-	"net/http"
-	"net/http/httptest"
-	"testing"
+	"gin-go-test/biz"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"gin-go-test/biz"
+	"net/http"
+	"net/http/httptest"
+	"testing"
 )
 
 // MockAnswerBiz is a mock implementation of biz.AnswerBiz
@@ -46,12 +46,12 @@ func setupTestRouter() (*gin.Engine, *MockAnswerBiz) {
 	router := gin.New()
 	mockBiz := new(MockAnswerBiz)
 	controller := &AnswerController{answerBiz: mockBiz}
-	
+
 	// Setup routes
 	router.POST("/api/user/answer", controller.SubmitAnswer)
 	router.GET("/api/user/answer/:record_id", controller.GetAnswerResult)
 	router.GET("/api/user/answer/:record_id/full", controller.GetFullAnswerResult)
-	
+
 	return router, mockBiz
 }
 
@@ -121,11 +121,11 @@ func TestSubmitAnswer(t *testing.T) {
 
 			// Assertions
 			assert.Equal(t, tt.expectedStatus, w.Code)
-			
+
 			var response map[string]interface{}
 			err := json.Unmarshal(w.Body.Bytes(), &response)
 			assert.NoError(t, err)
-			
+
 			for k, v := range tt.expectedBody {
 				assert.Equal(t, v, response[k])
 			}
@@ -186,11 +186,11 @@ func TestGetAnswerResult(t *testing.T) {
 
 			// Assertions
 			assert.Equal(t, tt.expectedStatus, w.Code)
-			
+
 			var response map[string]interface{}
 			err := json.Unmarshal(w.Body.Bytes(), &response)
 			assert.NoError(t, err)
-			
+
 			for k, v := range tt.expectedBody {
 				assert.Equal(t, v, response[k])
 			}
@@ -251,14 +251,14 @@ func TestGetFullAnswerResult(t *testing.T) {
 
 			// Assertions
 			assert.Equal(t, tt.expectedStatus, w.Code)
-			
+
 			var response map[string]interface{}
 			err := json.Unmarshal(w.Body.Bytes(), &response)
 			assert.NoError(t, err)
-			
+
 			for k, v := range tt.expectedBody {
 				assert.Equal(t, v, response[k])
 			}
 		})
 	}
-} 
+}

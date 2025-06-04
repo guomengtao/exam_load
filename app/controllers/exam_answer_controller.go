@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"net/http"
-	"github.com/gin-gonic/gin"
 	"gin-go-test/app/biz"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // ExamAnswerController handles HTTP requests for exam answers
@@ -56,4 +56,4 @@ func (c *ExamAnswerController) GetExamPaper(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, paper)
-} 
+}

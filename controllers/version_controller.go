@@ -10,4 +10,4 @@ func NewVersionController() *VersionController {
 
 func (c *VersionController) GetVersion(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"version": "v0.0.1"})
-} 
+}

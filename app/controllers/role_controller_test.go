@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"testing"
 	"strconv"
+	"testing"
 
-	"github.com/gin-gonic/gin"
-	"gin-go-test/app/models"
 	controllers "gin-go-test/app/controllers"
+	"gin-go-test/app/models"
 	"gin-go-test/utils"
+	"github.com/gin-gonic/gin"
 )
 
 func TestRoleController_BatchCreateHandler(t *testing.T) {

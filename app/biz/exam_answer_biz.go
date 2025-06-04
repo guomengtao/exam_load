@@ -22,21 +22,21 @@ type AnswerResponse struct {
 
 // ExamPaper represents the exam paper structure
 type ExamPaper struct {
-	ID          int64       `json:"id"`
-	Title       string      `json:"title"`
-	Description string      `json:"description"`
-	Questions   []Question  `json:"questions"`
+	ID          int64      `json:"id"`
+	Title       string     `json:"title"`
+	Description string     `json:"description"`
+	Questions   []Question `json:"questions"`
 }
 
 // Question represents a question in the exam paper
 type Question struct {
-	ID                  int64       `json:"id"`
-	Type                string      `json:"type"`
-	Content             string      `json:"content"`
-	Options             interface{} `json:"options"`
-	CorrectAnswer       interface{} `json:"correct_answer"`
-	CorrectAnswerBitmask int        `json:"correct_answer_bitmask"`
-	Score               int         `json:"score"`
+	ID                   int64       `json:"id"`
+	Type                 string      `json:"type"`
+	Content              string      `json:"content"`
+	Options              interface{} `json:"options"`
+	CorrectAnswer        interface{} `json:"correct_answer"`
+	CorrectAnswerBitmask int         `json:"correct_answer_bitmask"`
+	Score                int         `json:"score"`
 }
 
 // ExamAnswerBiz 处理考试答题相关的业务逻辑

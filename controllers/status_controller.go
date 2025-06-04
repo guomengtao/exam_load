@@ -10,4 +10,4 @@ func NewStatusController() *StatusController {
 
 func (c *StatusController) GetStatus(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"status": "ok"})
-} 
+}

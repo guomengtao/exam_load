@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
-	
 )
 
 // GoName returns the Go-style (CamelCase) field name based on the database column name.
@@ -25,11 +24,11 @@ func toCamelCase(s string) string {
 
 // Field represents a database table column with metadata needed for Go struct generation.
 type Field struct {
-	Name           string // Column name
-	Type           string // Go type corresponding to the column's data type
-	IsRequired     bool   // Whether the column is NOT NULL
-	IsPrimaryKey   bool   // Whether the column is a primary key
-	IsAutoIncrement bool  // Whether the column is auto-incremented
+	Name            string // Column name
+	Type            string // Go type corresponding to the column's data type
+	IsRequired      bool   // Whether the column is NOT NULL
+	IsPrimaryKey    bool   // Whether the column is a primary key
+	IsAutoIncrement bool   // Whether the column is auto-incremented
 }
 
 // GoType returns the Go type as string (used for templates)
@@ -114,10 +113,10 @@ ORDER BY ORDINAL_POSITION
 		}
 
 		field := Field{
-			Name:           columnName,
-			Type:           mapMySQLTypeToGoType(dataType),
-			IsRequired:     strings.EqualFold(isNullable, "NO"),
-			IsPrimaryKey:   columnKey == "PRI",
+			Name:            columnName,
+			Type:            mapMySQLTypeToGoType(dataType),
+			IsRequired:      strings.EqualFold(isNullable, "NO"),
+			IsPrimaryKey:    columnKey == "PRI",
 			IsAutoIncrement: strings.Contains(extra, "auto_increment"),
 		}
 

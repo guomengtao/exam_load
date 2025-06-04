@@ -27,13 +27,18 @@ func (b *userBiz) List(page, pageSize int) ([]models.User, error) {
 }
 
 // BatchCreate 批量创建记录
-func (b *userBiz) BatchCreate(items []*models.User) ([]models.User, []error) {
+func (b *userBiz) BatchCreate(items []*models.User) ([]models.User, error) {
 	// 将 []*models.User 转换为 []models.User
 	modelItems := make([]models.User, len(items))
 	for i, item := range items {
 		modelItems[i] = *item
 	}
-	return b.service.BatchCreate(modelItems)
+	// Assuming service.BatchCreate now returns ([]models.User, error)
+	createdItems, err := b.service.BatchCreate(modelItems)
+	if err != nil {
+		return nil, err
+	}
+	return createdItems, nil
 }
 
 // BatchUpdate 批量更新记录
@@ -47,11 +52,13 @@ func (b *userBiz) BatchUpdate(items []*models.User) error {
 }
 
 // BatchDelete 批量删除记录
-func (b *userBiz) BatchDelete(ids []int) []error {
+func (b *userBiz) BatchDelete(ids []int) error {
 	// 将 []int 转换为 []uint
 	uintIds := make([]uint, len(ids))
 	for i, id := range ids {
 		uintIds[i] = uint(id)
 	}
-	return b.service.BatchDelete(uintIds)
+	// Assuming service.BatchDelete now returns error
+	err := b.service.BatchDelete(uintIds)
+	return err
 }

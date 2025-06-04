@@ -1,9 +1,9 @@
 package services
 
 import (
+	"gin-go-test/utils"
 	"os"
 	"testing"
-	"gin-go-test/utils"
 )
 
 func TestMain(m *testing.M) {
@@ -11,7 +11,6 @@ func TestMain(m *testing.M) {
 	utils.InitDBX()
 
 	utils.InitGorm() // 初始化 GORM
-	 
 
 	// 执行测试
 	code := m.Run()

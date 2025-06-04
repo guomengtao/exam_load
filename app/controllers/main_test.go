@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"gin-go-test/utils"
 	"os"
 	"testing"
-	"gin-go-test/utils"
 )
 
 func TestMain(m *testing.M) {

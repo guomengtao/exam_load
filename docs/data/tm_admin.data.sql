@@ -21,6 +21,7 @@ CREATE TABLE `tm_admin` (
   `password` varchar(100) NOT NULL COMMENT 'bcrypt加密密码',
   `role_id` int(10) unsigned NOT NULL COMMENT '关联角色ID',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL COMMENT '软删除时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='管理员账号表';
@@ -39,4 +40,4 @@ CREATE TABLE `tm_admin` (
 -- ----------------------------
 -- Sample data for `tm_admin` (最早2条)
 -- ----------------------------
-INSERT INTO `tm_admin` VALUES (1,'admin','$2a$10$al3WiadEwCfSyaxekZA0leFQuW6sYmVRNSjUUdVU6O7.06ER.pt3m',1,'2025-05-09 07:05:25');
+INSERT INTO `tm_admin` VALUES (1,'admin','$2a$10$al3WiadEwCfSyaxekZA0leFQuW6sYmVRNSjUUdVU6O7.06ER.pt3m',1,'2025-05-09 07:05:25',NULL);

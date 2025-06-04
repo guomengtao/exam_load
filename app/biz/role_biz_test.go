@@ -1,54 +1,54 @@
 package biz
 
 import (
-	"errors" // 导入errors包用于自定义错误
-	"testing" // 导入testing包用于单元测试
-	"github.com/stretchr/testify/assert" // 导入assert用于断言
-	"gorm.io/gorm" // 导入gorm用于数据库操作
-	"gorm.io/driver/sqlite" // 导入sqlite驱动用于内存数据库
+	"errors"                 // 导入errors包用于自定义错误
 	"gin-go-test/app/models" // 修正为正确的模块路径
 	"gin-go-test/utils"
+	"github.com/stretchr/testify/assert" // 导入assert用于断言
+	"gorm.io/driver/sqlite"              // 导入sqlite驱动用于内存数据库
+	"gorm.io/gorm"                       // 导入gorm用于数据库操作
+	"testing"                            // 导入testing包用于单元测试
 )
 
 // setupTestDB 用于初始化内存数据库和迁移Role表结构
 func setupTestDB(t *testing.T) *gorm.DB {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{}) // 使用sqlite内存数据库
-	assert.NoError(t, err) // 断言数据库打开无错误
-	err = db.AutoMigrate(&models.Role{}) // 自动迁移Role表结构
-	assert.NoError(t, err) // 断言迁移无错误
-	return db // 返回数据库连接
+	assert.NoError(t, err)                                        // 断言数据库打开无错误
+	err = db.AutoMigrate(&models.Role{})                          // 自动迁移Role表结构
+	assert.NoError(t, err)                                        // 断言迁移无错误
+	return db                                                     // 返回数据库连接
 }
 
 // TestRoleBiz_BatchCreate_Success 测试批量创建成功时事务提交
 func TestRoleBiz_BatchCreate_Success(t *testing.T) {
-	db := setupTestDB(t) // 初始化测试数据库
+	db := setupTestDB(t)  // 初始化测试数据库
 	biz := NewRoleBiz(db) // 创建RoleBiz实例
 	roles := []models.Role{
 		{Name: "admin"}, // 添加一个角色admin
 		{Name: "user"},  // 添加一个角色user
 	}
 	err := biz.BatchCreate(roles) // 调用批量创建方法
-	assert.NoError(t, err) // 断言无错误
+	assert.NoError(t, err)        // 断言无错误
 
 	var count int64
 	db.Model(&models.Role{}).Count(&count) // 统计Role表中的记录数
-	assert.Equal(t, int64(2), count) // 断言有2条记录
+	assert.Equal(t, int64(2), count)       // 断言有2条记录
 }
 
 // TestRoleBiz_BatchCreate_TransactionRollback 测试批量创建失败时事务回滚
 func TestRoleBiz_BatchCreate_TransactionRollback(t *testing.T) {
-	db := setupTestDB(t) // 初始化测试数据库
+	db := setupTestDB(t)  // 初始化测试数据库
 	biz := NewRoleBiz(db) // 创建RoleBiz实例
 	roles := []models.Role{
 		{Name: "admin"}, // 添加一个角色admin
-		{Name: ""},     // 添加一个空Name角色，应该触发回滚
+		{Name: ""},      // 添加一个空Name角色，应该触发回滚
 	}
 	err := biz.BatchCreate(roles) // 调用批量创建方法
-	assert.Error(t, err) // 断言有错误发生
+	assert.Error(t, err)          // 断言有错误发生
 
 	var count int64
 	db.Model(&models.Role{}).Count(&count) // 统计Role表中的记录数
-	assert.Equal(t, int64(0), count) // 断言没有记录，说明事务回滚
+	assert.Equal(t, int64(0), count)       // 断言没有记录，说明事务回滚
 }
 
 // RoleBiz 业务层结构体，包含数据库连接

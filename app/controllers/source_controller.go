@@ -38,4 +38,4 @@ func (c *SourceController) CheckSource(ctx *gin.Context) {
 			"message": "数据源连接异常",
 		})
 	}
-} 
+}

@@ -65,28 +65,27 @@ func (s *BadmintonGameServiceSkeleton) BatchCreate(items []*models.BadmintonGame
 	var errors []ErrorResponse
 
 	for i, item := range items {
-		
+
 		// id 字段校验
 		fmt.Printf("Creating BadmintonGame: id = %v\n", item.Id)
-		
+
 		// player1 字段校验
 		fmt.Printf("Creating BadmintonGame: player1 = %v\n", item.Player1)
-		
+
 		// player2 字段校验
 		fmt.Printf("Creating BadmintonGame: player2 = %v\n", item.Player2)
-		
+
 		// score1 字段校验
 		fmt.Printf("Creating BadmintonGame: score1 = %v\n", item.Score1)
-		
+
 		// score2 字段校验
 		fmt.Printf("Creating BadmintonGame: score2 = %v\n", item.Score2)
-		
+
 		// location 字段校验
 		fmt.Printf("Creating BadmintonGame: location = %v\n", item.Location)
-		
+
 		// match_time 字段校验
 		fmt.Printf("Creating BadmintonGame: match_time = %v\n", item.MatchTime)
-		
 
 		// 创建记录
 		if err := tx.Create(item).Error; err != nil {
@@ -133,28 +132,20 @@ func (s *BadmintonGameServiceSkeleton) BatchUpdate(items []*models.BadmintonGame
 			errors = append(errors, NewErrorResponse(400, fmt.Sprintf("item[%d]: id is required", i), ""))
 			continue
 		}
-		
+
 		// id 字段校验
-		
-		
+
 		// player1 字段校验
-		
-		
+
 		// player2 字段校验
-		
-		
+
 		// score1 字段校验
-		
-		
+
 		// score2 字段校验
-		
-		
+
 		// location 字段校验
-		
-		
+
 		// match_time 字段校验
-		
-		
 
 		// 检查记录是否存在
 		var existing models.BadmintonGame
@@ -169,35 +160,34 @@ func (s *BadmintonGameServiceSkeleton) BatchUpdate(items []*models.BadmintonGame
 
 		// 构建只包含非 nil 字段的更新 map
 		updateMap := make(map[string]interface{})
-		
+
 		if item.Id != nil {
 			updateMap["id"] = *item.Id
 		}
-		
+
 		if item.Player1 != nil {
 			updateMap["player1"] = *item.Player1
 		}
-		
+
 		if item.Player2 != nil {
 			updateMap["player2"] = *item.Player2
 		}
-		
+
 		if item.Score1 != nil {
 			updateMap["score1"] = *item.Score1
 		}
-		
+
 		if item.Score2 != nil {
 			updateMap["score2"] = *item.Score2
 		}
-		
+
 		if item.Location != nil {
 			updateMap["location"] = *item.Location
 		}
-		
+
 		if item.MatchTime != nil {
 			updateMap["match_time"] = *item.MatchTime
 		}
-		
 
 		if len(updateMap) == 0 {
 			errors = append(errors, NewErrorResponse(400, fmt.Sprintf("item[%d]: no fields to update", i), ""))

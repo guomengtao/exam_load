@@ -1,8 +1,8 @@
 package services
 
 import (
-	"testing"
 	"gin-go-test/utils"
+	"testing"
 )
 
 func TestLoadUsersToRedis(t *testing.T) {

@@ -2,7 +2,7 @@ package controllers
 
 import "github.com/gin-gonic/gin"
 
-type SourceController struct{
+type SourceController struct {
 	db interface{}
 }
 
@@ -12,4 +12,4 @@ func NewSourceController(db interface{}) *SourceController {
 
 func (c *SourceController) CheckSource(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"source": "ok"})
-} 
+}

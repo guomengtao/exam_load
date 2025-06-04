@@ -30,13 +30,18 @@ func (b *exam_templateBiz) List(page, pageSize int) ([]models.ExamTemplate, erro
 }
 
 // BatchCreate 批量创建记录
-func (b *exam_templateBiz) BatchCreate(items []*models.ExamTemplate) ([]models.ExamTemplate, []error) {
+func (b *exam_templateBiz) BatchCreate(items []*models.ExamTemplate) ([]models.ExamTemplate, error) {
 	// 将 []*models.ExamTemplate 转换为 []models.ExamTemplate
 	modelItems := make([]models.ExamTemplate, len(items))
 	for i, item := range items {
 		modelItems[i] = *item
 	}
-	return b.service.BatchCreate(modelItems)
+	// Assuming service.BatchCreate now returns ([]models.ExamTemplate, error)
+	createdItems, err := b.service.BatchCreate(modelItems)
+	if err != nil {
+		return nil, err
+	}
+	return createdItems, nil
 }
 
 // BatchUpdate 批量更新记录
@@ -50,11 +55,23 @@ func (b *exam_templateBiz) BatchUpdate(items []*models.ExamTemplate) error {
 }
 
 // BatchDelete 批量删除记录
-func (b *exam_templateBiz) BatchDelete(ids []int) []error {
+func (b *exam_templateBiz) BatchDelete(ids []int) error {
 	// 将 []int 转换为 []uint
 	uintIds := make([]uint, len(ids))
 	for i, id := range ids {
 		uintIds[i] = uint(id)
 	}
-	return b.service.BatchDelete(uintIds)
+	// Assuming service.BatchDelete now returns error
+	err := b.service.BatchDelete(uintIds)
+	return err
+}
+
+// GetDetail 获取记录详情
+func (b *exam_templateBiz) GetDetail(id string) (*models.ExamTemplate, error) {
+	return b.service.GetDetail(id)
+}
+
+// ListWithOrder 获取记录列表（带排序）
+func (b *exam_templateBiz) ListWithOrder(page, pageSize int, sort, order string) ([]*models.ExamTemplate, error) {
+	return b.service.ListWithOrder(page, pageSize, sort, order)
 }

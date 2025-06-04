@@ -62,49 +62,48 @@ func (s *UserServiceSkeleton) BatchCreate(items []*models.User) (int, []ErrorRes
 	var errors []ErrorResponse
 
 	for i, item := range items {
-		
+
 		// id 字段校验
 		fmt.Printf("Creating User: id = %v\n", item.Id)
-		
+
 		// username 字段校验
 		fmt.Printf("Creating User: username = %v\n", item.Username)
-		
+
 		// admin_id 字段校验
 		fmt.Printf("Creating User: admin_id = %v\n", item.AdminId)
-		
+
 		// province 字段校验
 		fmt.Printf("Creating User: province = %v\n", item.Province)
-		
+
 		// city 字段校验
 		fmt.Printf("Creating User: city = %v\n", item.City)
-		
+
 		// area 字段校验
 		fmt.Printf("Creating User: area = %v\n", item.Area)
-		
+
 		// school_name 字段校验
 		fmt.Printf("Creating User: school_name = %v\n", item.SchoolName)
-		
+
 		// grade_name 字段校验
 		fmt.Printf("Creating User: grade_name = %v\n", item.GradeName)
-		
+
 		// class_name 字段校验
 		fmt.Printf("Creating User: class_name = %v\n", item.ClassName)
-		
+
 		// user_id 字段校验
 		fmt.Printf("Creating User: user_id = %v\n", item.UserId)
-		
+
 		// phone 字段校验
 		fmt.Printf("Creating User: phone = %v\n", item.Phone)
-		
+
 		// user_type 字段校验
 		fmt.Printf("Creating User: user_type = %v\n", item.UserType)
-		
+
 		// school_level 字段校验
 		fmt.Printf("Creating User: school_level = %v\n", item.SchoolLevel)
-		
+
 		// created_at 字段校验
 		fmt.Printf("Creating User: created_at = %v\n", item.CreatedAt)
-		
 
 		// 创建记录
 		if err := tx.Create(item).Error; err != nil {
@@ -151,49 +150,48 @@ func (s *UserServiceSkeleton) BatchUpdate(items []*models.User) (int, []ErrorRes
 			errors = append(errors, NewErrorResponse(400, fmt.Sprintf("item[%d]: id is required", i), ""))
 			continue
 		}
-		
+
 		// id 字段校验
 		fmt.Printf("Updating User: id = %v\n", item.Id)
-		
+
 		// username 字段校验
 		fmt.Printf("Updating User: username = %v\n", item.Username)
-		
+
 		// admin_id 字段校验
 		fmt.Printf("Updating User: admin_id = %v\n", item.AdminId)
-		
+
 		// province 字段校验
 		fmt.Printf("Updating User: province = %v\n", item.Province)
-		
+
 		// city 字段校验
 		fmt.Printf("Updating User: city = %v\n", item.City)
-		
+
 		// area 字段校验
 		fmt.Printf("Updating User: area = %v\n", item.Area)
-		
+
 		// school_name 字段校验
 		fmt.Printf("Updating User: school_name = %v\n", item.SchoolName)
-		
+
 		// grade_name 字段校验
 		fmt.Printf("Updating User: grade_name = %v\n", item.GradeName)
-		
+
 		// class_name 字段校验
 		fmt.Printf("Updating User: class_name = %v\n", item.ClassName)
-		
+
 		// user_id 字段校验
 		fmt.Printf("Updating User: user_id = %v\n", item.UserId)
-		
+
 		// phone 字段校验
 		fmt.Printf("Updating User: phone = %v\n", item.Phone)
-		
+
 		// user_type 字段校验
 		fmt.Printf("Updating User: user_type = %v\n", item.UserType)
-		
+
 		// school_level 字段校验
 		fmt.Printf("Updating User: school_level = %v\n", item.SchoolLevel)
-		
+
 		// created_at 字段校验
 		fmt.Printf("Updating User: created_at = %v\n", item.CreatedAt)
-		
 
 		// 检查记录是否存在
 		var existing models.User

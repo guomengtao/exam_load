@@ -5,9 +5,11 @@ package controller
 
 import (
 	"gin-go-test/app/biz"
-	"gin-go-test/app/models"
+	"gin-go-test/app/controllers"
+	"gin-go-test/app/services"
 	"gin-go-test/utils"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // ExamTemplateSkeleton 控制器骨架
@@ -100,5 +102,13 @@ func (s *ExamTemplateSkeleton) GetDetail(c *gin.Context) {
 	utils.Success(c, item)
 }
 
-// 路由注册
-group.GET("/:id", s.GetDetail)
+// RegisterExamTemplateRoutes 注册 ExamTemplate 相关路由
+func RegisterExamTemplateRoutes(router *gin.Engine, db *gorm.DB) {
+	skeleton := controllers.NewExamTemplateSkeleton(biz.NewExamTemplateBiz(services.NewExamTemplateService(db)))
+	// 注册路由
+	router.GET("/exam_template", skeleton.ListHandler)
+	router.POST("/exam_template", skeleton.BatchCreateHandler)
+	router.PUT("/exam_template/:id", skeleton.BatchUpdateHandler)
+	router.DELETE("/exam_template/:id", skeleton.BatchDeleteHandler)
+	router.GET("/exam_template/:id", skeleton.GetDetail)
+}

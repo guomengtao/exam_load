@@ -42,7 +42,7 @@ func (w *RedisWriter) WriteMockData(ctx context.Context) error {
 // WriteAnswer 将答题记录写入 Redis
 func (w *RedisWriter) WriteAnswer(ctx context.Context, answer *Answer) error {
 	redisKey := fmt.Sprintf("exam_answer:%s", answer.UUID)
-	
+
 	// 将 answers 转换为 JSON 字符串
 	answers, err := json.Marshal(answer.Answers)
 	if err != nil {

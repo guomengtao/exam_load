@@ -23,6 +23,7 @@ CREATE TABLE `tm_badminton_game` (
   `score2` int(11) DEFAULT '0' COMMENT '选手2得分',
   `location` varchar(100) DEFAULT NULL COMMENT '比赛地点',
   `match_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '比赛时间',
+  `deleted_at` datetime DEFAULT NULL COMMENT '软删除时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8mb4 COMMENT='羽毛球比赛记录表';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -40,4 +41,4 @@ CREATE TABLE `tm_badminton_game` (
 -- ----------------------------
 -- Sample data for `tm_badminton_game` (最早2条)
 -- ----------------------------
-INSERT INTO `tm_badminton_game` VALUES (3,'Tom','Jack',21,15,'','0000-00-00 00:00:00'),(4,'Alice','Bob',44,4,'','0000-00-00 00:00:00'),(5,'Tom','Jack',55,5,'','0000-00-00 00:00:00'),(6,'Alice','Bob',18,21,'','0000-00-00 00:00:00'),(7,'Tom','Jack',21,15,'','0000-00-00 00:00:00'),(8,'Alice','Bob',18,21,'','0000-00-00 00:00:00'),(9,'Tom','Jack',21,15,'','0000-00-00 00:00:00'),(10,'Alice','Bob',18,21,'','0000-00-00 00:00:00'),(11,'Tom','Jack',21,15,'','0000-00-00 00:00:00'),(12,'Alice','Bob',18,21,'','0000-00-00 00:00:00'),(13,'Tom','Jack',21,15,'','0000-00-00 00:00:00'),(14,'Alice','Bob',18,21,'','0000-00-00 00:00:00'),(15,'Tom','Jack',21,15,'','0000-00-00 00:00:00'),(16,'Alice','Bob',18,21,'','0000-00-00 00:00:00'),(17,'Tom','Jack',21,15,'','0000-00-00 00:00:00'),(18,'Alice','Bob',18,21,'','0000-00-00 00:00:00'),(73,'Tom','Jack',21,15,NULL,NULL),(74,'Alice','Bob',18,21,NULL,NULL),(75,'Tom','Jack',21,15,NULL,NULL),(76,'Alice','Bob',18,21,NULL,NULL),(77,'Tom','Jack',21,15,NULL,NULL),(78,'Alice','Bob',18,21,NULL,NULL);
+INSERT INTO `tm_badminton_game` VALUES (3,'Tom','Jack',21,15,'','0000-00-00 00:00:00',NULL),(4,'Alice','Bob',44,4,'','0000-00-00 00:00:00',NULL),(5,'Tom','Jack',55,5,'','0000-00-00 00:00:00',NULL),(6,'Alice','Bob',18,21,'','0000-00-00 00:00:00',NULL),(7,'Tom','Jack',21,15,'','0000-00-00 00:00:00',NULL),(8,'Alice','Bob',18,21,'','0000-00-00 00:00:00',NULL),(9,'Tom','Jack',21,15,'','0000-00-00 00:00:00',NULL),(10,'Alice','Bob',18,21,'','0000-00-00 00:00:00',NULL),(11,'Tom','Jack',21,15,'','0000-00-00 00:00:00',NULL),(12,'Alice','Bob',18,21,'','0000-00-00 00:00:00',NULL),(13,'Tom','Jack',21,15,'','0000-00-00 00:00:00',NULL),(14,'Alice','Bob',18,21,'','0000-00-00 00:00:00',NULL),(15,'Tom','Jack',21,15,'','0000-00-00 00:00:00',NULL),(16,'Alice','Bob',18,21,'','0000-00-00 00:00:00',NULL),(17,'Tom','Jack',21,15,'','0000-00-00 00:00:00',NULL),(18,'Alice','Bob',18,21,'','0000-00-00 00:00:00',NULL),(73,'Tom','Jack',21,15,NULL,NULL,NULL),(74,'Alice','Bob',18,21,NULL,NULL,NULL),(75,'Tom','Jack',21,15,NULL,NULL,NULL),(76,'Alice','Bob',18,21,NULL,NULL,NULL),(77,'Tom','Jack',21,15,NULL,NULL,NULL),(78,'Alice','Bob',18,21,NULL,NULL,NULL);

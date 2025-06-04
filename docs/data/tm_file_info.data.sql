@@ -21,6 +21,7 @@ CREATE TABLE `tm_file_info` (
   `file_path` varchar(512) DEFAULT NULL COMMENT '文件路径',
   `file_size` bigint(20) DEFAULT NULL COMMENT '文件大小，单位字节',
   `uploaded_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '上传时间',
+  `deleted_at` datetime DEFAULT NULL COMMENT '软删除时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COMMENT='文件信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;

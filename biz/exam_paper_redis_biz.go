@@ -2,8 +2,8 @@ package biz
 
 import (
 	"context"
-	"strconv"
 	"gin-go-test/app/services"
+	"strconv"
 )
 
 // ExamPaperRedisBiz handles the business logic for Redis-based exam paper operations
@@ -33,4 +33,4 @@ func (b *ExamPaperRedisBiz) ListExamPapersFromRedis(ctx context.Context, pagePar
 		return b.paperService.GetExamPaperByUUID(ctx, uuidParam)
 	}
 	return b.paperService.ListExamPapers(ctx, page, limit)
-} 
+}

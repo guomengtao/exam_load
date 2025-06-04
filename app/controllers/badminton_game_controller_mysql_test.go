@@ -9,14 +9,14 @@ import (
 	"os"
 	"testing"
 
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
+	"gin-go-test/app/biz"
 	"gin-go-test/app/models"
 	"gin-go-test/app/services"
-	"gin-go-test/app/biz"
+	"gin-go-test/utils/generated/controller"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"gin-go-test/utils/generated/controller"
 )
 
 // setupMySQLTestDB initializes and returns a *gorm.DB connected to MySQL for tests

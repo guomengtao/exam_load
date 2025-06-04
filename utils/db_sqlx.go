@@ -2,12 +2,12 @@ package utils
 
 import (
 	"fmt"
+	"gin-go-test/config"
 	"log"
 	"os"
-	"gin-go-test/config"
 
-	"github.com/jmoiron/sqlx"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 )
 
 // DBX 是 sqlx 的数据库连接实例

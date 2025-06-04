@@ -3,6 +3,7 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"gin-go-test/app/biz"
 	"gin-go-test/app/models"
 	"gin-go-test/app/services"
@@ -14,7 +15,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"fmt"
 )
 
 func setupTestRouter() (*gin.Engine, *gorm.DB, *services.BadmintonGameService) {

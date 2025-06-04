@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
 	"gin-go-test/app/controllers"
 	"gin-go-test/auth"
 	"gin-go-test/utils"
+	"github.com/gin-gonic/gin"
 )
 
 func SetupRoutes(router *gin.Engine) {
@@ -53,14 +53,14 @@ func SetupRoutes(router *gin.Engine) {
 	routeController := controllers.NewRouteController(utils.GormDB, router)
 	routeGroup := router.Group("/api/route")
 	{
-		routeGroup.POST("/refresh", routeController.RefreshRoutes)           // 刷新路由列表
-		routeGroup.GET("/list", routeController.GetRoutes)                  // 获取路由列表
-		routeGroup.GET("/:id", routeController.GetRouteDetail)              // 获取路由详情
-		routeGroup.PUT("/:id/status", routeController.UpdateRouteStatus)    // 更新路由状态
-		routeGroup.GET("/groups", routeController.GetRouteGroups)           // 获取路由分组
-		routeGroup.PUT("/:id/group", routeController.UpdateRouteGroup)      // 更新路由分组
+		routeGroup.POST("/refresh", routeController.RefreshRoutes)               // 刷新路由列表
+		routeGroup.GET("/list", routeController.GetRoutes)                       // 获取路由列表
+		routeGroup.GET("/:id", routeController.GetRouteDetail)                   // 获取路由详情
+		routeGroup.PUT("/:id/status", routeController.UpdateRouteStatus)         // 更新路由状态
+		routeGroup.GET("/groups", routeController.GetRouteGroups)                // 获取路由分组
+		routeGroup.PUT("/:id/group", routeController.UpdateRouteGroup)           // 更新路由分组
 		routeGroup.PUT("/:id/permission", routeController.UpdateRoutePermission) // 更新路由权限
-		routeGroup.GET("/stats", routeController.GetRouteStats)             // 获取路由统计
+		routeGroup.GET("/stats", routeController.GetRouteStats)                  // 获取路由统计
 	}
 
 	// Auto Gen Router

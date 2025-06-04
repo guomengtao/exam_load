@@ -9,4 +9,4 @@ type AdminController struct{}
 
 func (a *AdminController) UpdatePassword(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Password updated (mock)"})
-} 
+}

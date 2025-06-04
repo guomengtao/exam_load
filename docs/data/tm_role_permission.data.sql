@@ -18,6 +18,7 @@ DROP TABLE IF EXISTS `tm_role_permission`;
 CREATE TABLE `tm_role_permission` (
   `role_id` int(10) unsigned NOT NULL,
   `permission_id` int(10) unsigned NOT NULL,
+  `deleted_at` datetime DEFAULT NULL COMMENT '软删除时间',
   PRIMARY KEY (`role_id`,`permission_id`),
   KEY `permission_id` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色权限关联表';
@@ -36,4 +37,4 @@ CREATE TABLE `tm_role_permission` (
 -- ----------------------------
 -- Sample data for `tm_role_permission` (最早2条)
 -- ----------------------------
-INSERT INTO `tm_role_permission` VALUES (1,1),(2,1),(1,2),(1,3);
+INSERT INTO `tm_role_permission` VALUES (1,1,NULL),(1,2,NULL),(1,3,NULL),(2,1,NULL);

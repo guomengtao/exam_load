@@ -4,23 +4,23 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"gin-go-test/app/services"
+	"github.com/google/uuid"
 	"sort"
 	"strconv"
 	"time"
-	"github.com/google/uuid"
-	"gin-go-test/app/services"
 )
 
 // AnswerRequest represents the request structure for submitting answers
 type AnswerRequest struct {
-	UUID       string                     `json:"uuid" binding:"required"`
-	ExamID     int64                      `json:"exam_id" binding:"required"`
-	ExamUUID   string                     `json:"exam_uuid"`
-	Answers    map[string]json.RawMessage `json:"answers" binding:"required"`
-	Username   string                     `json:"username"`
-	UserID     string                     `json:"user_id"`
-	Duration   int                        `json:"duration"`
-	FullScore  int                        `json:"full_score"`
+	UUID      string                     `json:"uuid" binding:"required"`
+	ExamID    int64                      `json:"exam_id" binding:"required"`
+	ExamUUID  string                     `json:"exam_uuid"`
+	Answers   map[string]json.RawMessage `json:"answers" binding:"required"`
+	Username  string                     `json:"username"`
+	UserID    string                     `json:"user_id"`
+	Duration  int                        `json:"duration"`
+	FullScore int                        `json:"full_score"`
 }
 
 // AnswerResponse represents the response structure for answer records
@@ -128,16 +128,16 @@ func (b *AnswerBiz) SubmitAnswer(ctx context.Context, req *AnswerRequest) (*Answ
 	// Prepare record data
 	record := map[string]interface{}{
 		"answer_uid":  recordID,
-		"exam_id":    req.ExamID,
-		"exam_uuid":  req.ExamUUID,
-		"user_uuid":  req.UUID,
-		"answers":    req.Answers,
+		"exam_id":     req.ExamID,
+		"exam_uuid":   req.ExamUUID,
+		"user_uuid":   req.UUID,
+		"answers":     req.Answers,
 		"total_score": totalScore,
-		"created_at": createdAt,
-		"username":   req.Username,
-		"user_id":    req.UserID,
-		"duration":   req.Duration,
-		"score":      totalScore,
+		"created_at":  createdAt,
+		"username":    req.Username,
+		"user_id":     req.UserID,
+		"duration":    req.Duration,
+		"score":       totalScore,
 	}
 
 	// Save to Redis
@@ -279,7 +279,7 @@ func (b *AnswerBiz) buildFullResponse(record *AnswerResponse, paper *ExamPaper) 
 		// Parse user's answer
 		var answerDetail struct {
 			Answer interface{} `json:"answer"`
-			Score  int        `json:"score"`
+			Score  int         `json:"score"`
 		}
 		if err := json.Unmarshal(userAnswer, &answerDetail); err != nil {
 			return nil, fmt.Errorf("解析用户答案失败: %v", err)
@@ -382,4 +382,4 @@ func (b *AnswerBiz) normalizeAnswer(answer interface{}) []int {
 	default:
 		return nil
 	}
-} 
+}

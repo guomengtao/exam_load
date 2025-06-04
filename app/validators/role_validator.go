@@ -1,8 +1,8 @@
 package validators
 
 import (
-	"github.com/go-playground/validator/v10"
 	"gin-go-test/app/models"
+	"github.com/go-playground/validator/v10"
 )
 
 // RoleValidator 角色验证器
@@ -51,4 +51,4 @@ func (v *RoleValidator) ValidateBatchCreate(roles []*models.Role) []error {
 // ValidateBatchUpdate 验证批量更新请求
 func (v *RoleValidator) ValidateBatchUpdate(roles []*models.Role) []error {
 	return v.ValidateBatch(roles)
-} 
+}

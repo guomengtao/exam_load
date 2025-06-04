@@ -54,7 +54,7 @@ func (s *BadmintonGameService) BatchUpdate(items []models.BadmintonGame) error {
 	for _, item := range items {
 		// 构造更新 map,只放请求体中出现的字段
 		updateMap := make(map[string]interface{})
-		
+
 		// 如果字段在请求体中出现,就加入更新 map
 		// 注意:即使值是 ""、0、null,也要更新
 		if item.Id != nil {

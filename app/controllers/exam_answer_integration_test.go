@@ -3,14 +3,14 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
+	"gin-go-test/app/biz"
+	"gin-go-test/app/services"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"gin-go-test/app/biz"
-	"gin-go-test/app/services"
 )
 
 // 直接使用全局 Redis 客户端，不调用 NewRedisHelper
@@ -32,15 +32,15 @@ func TestAnswerIntegration(t *testing.T) {
 
 	// 1. 保存答题记录
 	payload := map[string]interface{}{
-		"answer_uid": "test-uuid",
-		"exam_id":    1,
-		"exam_uuid":  "exam-uuid",
-		"answers":    map[string]interface{}{"1": map[string]interface{}{"answer": 1, "score": 10}},
-		"score":      10,
-		"created_at": time.Now().Unix(),
-		"user_uuid":  "user-uuid",
-		"username":   "test-user",
-		"user_id":    "user-1",
+		"answer_uid":  "test-uuid",
+		"exam_id":     1,
+		"exam_uuid":   "exam-uuid",
+		"answers":     map[string]interface{}{"1": map[string]interface{}{"answer": 1, "score": 10}},
+		"score":       10,
+		"created_at":  time.Now().Unix(),
+		"user_uuid":   "user-uuid",
+		"username":    "test-user",
+		"user_id":     "user-1",
 		"total_score": 10,
 		"duration":    30,
 	}
@@ -57,4 +57,4 @@ func TestAnswerIntegration(t *testing.T) {
 	r.ServeHTTP(w2, req2)
 	assert.Equal(t, 200, w2.Code)
 	// 你可以进一步断言返回内容
-} 
+}

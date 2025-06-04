@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
-	"time"
 	"gin-go-test/utils"
 	"gorm.io/gorm"
+	"strconv"
+	"time"
 )
 
 // RedisHelper defines the interface for Redis operations
@@ -59,10 +59,10 @@ type AnswerResponse struct {
 
 // ExamPaper represents the exam paper structure
 type ExamPaper struct {
-	ID          int64       `json:"id"`
-	Title       string      `json:"title"`
-	Description string      `json:"description"`
-	Questions   []Question  `json:"questions"`
+	ID          int64      `json:"id"`
+	Title       string     `json:"title"`
+	Description string     `json:"description"`
+	Questions   []Question `json:"questions"`
 }
 
 // Question represents a question in the exam paper
@@ -80,14 +80,14 @@ type Question struct {
 
 // AnswerService handles the data operations for exam answers
 type AnswerService struct {
-	db         *gorm.DB
+	db          *gorm.DB
 	redisHelper RedisHelper
 }
 
 // NewAnswerService creates a new instance of AnswerService
 func NewAnswerService() *AnswerService {
 	return &AnswerService{
-		db:         utils.GormDB,
+		db:          utils.GormDB,
 		redisHelper: &DefaultRedisHelper{},
 	}
 }
@@ -95,7 +95,7 @@ func NewAnswerService() *AnswerService {
 // NewAnswerServiceWithRedis creates a new instance of AnswerService with custom Redis helper
 func NewAnswerServiceWithRedis(db *gorm.DB, redisHelper RedisHelper) *AnswerService {
 	return &AnswerService{
-		db:         db,
+		db:          db,
 		redisHelper: redisHelper,
 	}
 }
@@ -103,7 +103,7 @@ func NewAnswerServiceWithRedis(db *gorm.DB, redisHelper RedisHelper) *AnswerServ
 // SaveToRedis saves the answer record to Redis
 func (s *AnswerService) SaveToRedis(ctx context.Context, data map[string]interface{}) error {
 	redisKey := fmt.Sprintf("exam_answer:%s", data["answer_uid"])
-	
+
 	// Convert answers to JSON string
 	answers, err := json.Marshal(data["answers"])
 	if err != nil {

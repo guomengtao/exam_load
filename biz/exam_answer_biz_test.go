@@ -3,10 +3,10 @@ package biz
 import (
 	"context"
 	"encoding/json"
-	"testing"
+	"gin-go-test/services"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"gin-go-test/services"
+	"testing"
 )
 
 // MockAnswerService is a mock implementation of services.AnswerService
@@ -50,11 +50,11 @@ func TestSubmitAnswer(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
-		name           string
-		request        *AnswerRequest
-		mockError      error
-		expectedError  bool
-		expectedScore  int
+		name          string
+		request       *AnswerRequest
+		mockError     error
+		expectedError bool
+		expectedScore int
 	}{
 		{
 			name: "successful submission",
@@ -131,11 +131,11 @@ func TestGetAnswerResult(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
-		name           string
-		recordID       string
-		mockResponse   *AnswerResponse
-		mockError      error
-		expectedError  bool
+		name          string
+		recordID      string
+		mockResponse  *AnswerResponse
+		mockError     error
+		expectedError bool
 	}{
 		{
 			name:     "successful retrieval",
@@ -149,11 +149,11 @@ func TestGetAnswerResult(t *testing.T) {
 			expectedError: false,
 		},
 		{
-			name:           "record not found",
-			recordID:       "non-existent",
-			mockResponse:   nil,
-			mockError:      assert.AnError,
-			expectedError:  true,
+			name:          "record not found",
+			recordID:      "non-existent",
+			mockResponse:  nil,
+			mockError:     assert.AnError,
+			expectedError: true,
 		},
 	}
 
@@ -183,12 +183,12 @@ func TestGetFullAnswerResult(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
-		name           string
-		recordID       string
-		mockAnswer     *AnswerResponse
-		mockPaper      *ExamPaper
-		mockError      error
-		expectedError  bool
+		name          string
+		recordID      string
+		mockAnswer    *AnswerResponse
+		mockPaper     *ExamPaper
+		mockError     error
+		expectedError bool
 	}{
 		{
 			name:     "successful retrieval",
@@ -209,12 +209,12 @@ func TestGetFullAnswerResult(t *testing.T) {
 			expectedError: false,
 		},
 		{
-			name:           "answer not found",
-			recordID:       "non-existent",
-			mockAnswer:     nil,
-			mockPaper:      nil,
-			mockError:      assert.AnError,
-			expectedError:  true,
+			name:          "answer not found",
+			recordID:      "non-existent",
+			mockAnswer:    nil,
+			mockPaper:     nil,
+			mockError:     assert.AnError,
+			expectedError: true,
 		},
 	}
 
@@ -323,4 +323,4 @@ func TestIsAnswerCorrect(t *testing.T) {
 			assert.Equal(t, tt.expectedResult, result)
 		})
 	}
-} 
+}

@@ -9,14 +9,14 @@ import (
 	"io"
 	"os"
 	"time"
-	
-	"github.com/gin-gonic/gin"
-	"github.com/gin-contrib/cors"
+
+	_ "gin-go-test/docs" // 修改为你的 go.mod 模块名
 	"gin-go-test/routes"
 	"gin-go-test/utils"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	"github.com/swaggo/files"
-    "github.com/swaggo/gin-swagger"
-	_ "gin-go-test/docs"  // 修改为你的 go.mod 模块名
+	"github.com/swaggo/gin-swagger"
 	// "gin-go-test/auth"
 	// "gin-go-test/app/services"
 )
@@ -25,15 +25,13 @@ func main() {
 	// 启用控制台彩色日志
 	gin.ForceConsoleColor()
 
-	 
-	
 	// 创建日志文件
 	f, err := os.Create("gin.log")
 	if err != nil {
 		panic(err)
 	}
 	defer f.Close()
-	
+
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 
 	// 初始化数据库和Redis
@@ -41,7 +39,7 @@ func main() {
 	utils.InitRedis()
 
 	utils.InitDBX()
-	utils.InitGorm()  // 必须调用这个
+	utils.InitGorm() // 必须调用这个
 
 	// auth.InitDB(utils.DB) // 初始化认证模块
 
@@ -49,7 +47,7 @@ func main() {
 	// services.StartAllTasks()
 
 	router := gin.Default()
-	
+
 	// CORS配置
 	router.Use(cors.New(cors.Config{
 		AllowAllOrigins: true,

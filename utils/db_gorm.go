@@ -2,9 +2,9 @@ package utils
 
 import (
 	"fmt"
+	"gin-go-test/config"
 	"log"
 	"os"
-	"gin-go-test/config"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

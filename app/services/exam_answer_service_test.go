@@ -2,10 +2,10 @@ package services
 
 import (
 	"context"
-	"testing"
-	"time"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"testing"
+	"time"
 )
 
 // MockRedisHelper is a mock implementation of RedisHelper
@@ -175,8 +175,8 @@ func TestGetAnswerRecord(t *testing.T) {
 				"duration":    "30",
 				"answers":     "invalid json",
 			},
-			mockError:     nil,
-			expectedError: true,
+			mockError:      nil,
+			expectedError:  true,
 			expectedRecord: nil,
 		},
 	}
@@ -218,12 +218,12 @@ func TestGetExamPaper(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
-		name           string
-		examUUID       string
-		mockData       map[string]string
-		mockError      error
-		expectedError  bool
-		expectedPaper  *ExamPaper
+		name          string
+		examUUID      string
+		mockData      map[string]string
+		mockError     error
+		expectedError bool
+		expectedPaper *ExamPaper
 	}{
 		{
 			name:     "successful retrieval from redis",
@@ -246,12 +246,12 @@ func TestGetExamPaper(t *testing.T) {
 			},
 		},
 		{
-			name:           "paper not found in redis",
-			examUUID:       "non-existent",
-			mockData:       nil,
-			mockError:      assert.AnError,
-			expectedError:  true,
-			expectedPaper:  nil,
+			name:          "paper not found in redis",
+			examUUID:      "non-existent",
+			mockData:      nil,
+			mockError:     assert.AnError,
+			expectedError: true,
+			expectedPaper: nil,
 		},
 		{
 			name:     "invalid paper data",

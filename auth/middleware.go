@@ -59,7 +59,7 @@ func PermissionMiddleware(requiredPermission string) gin.HandlerFunc {
 
 		// 将 roleID 转换为字符串
 		roleIDStr := fmt.Sprintf("%v", roleID)
-		
+
 		// 如果是管理员角色（role_id = "1"），直接放行
 		if roleIDStr == "1" {
 			c.Next()
@@ -74,7 +74,7 @@ func PermissionMiddleware(requiredPermission string) gin.HandlerFunc {
 			})
 			return
 		}
-		
+
 		c.Next()
 	}
 }
